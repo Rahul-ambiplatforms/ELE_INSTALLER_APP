@@ -1,0 +1,203 @@
+/* ==========================================================================
+   Modern Interactive Auto-Installer CSS
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Root Variables
+   ========================================================================== */
+:root {
+  /* Primary Colors */
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --primary-color: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary-color: #a855f7;
+  --accent-color: #ec4899;
+
+  /* Neutral */
+  --background-primary: #f9fafb;
+  --background-secondary: #ffffffcc; /* glass effect */
+  --background-tertiary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+
+  /* Status */
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #3b82f6;
+
+  /* Shadows */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --shadow-neumorph: 5px 5px 15px rgba(0,0,0,0.15), -5px -5px 15px rgba(255,255,255,0.6);
+
+  /* Radius */
+  --radius: 0.75rem;
+
+  /* Animation */
+  --transition: all 0.3s ease;
+}
+
+/* ==========================================================================
+   2. General Styles
+   ========================================================================== */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background: var(--background-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glass & neumorphic container */
+.main-content-wrapper {
+  background: var(--background-secondary);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-glass);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================================================
+   3. Buttons
+   ========================================================================== */
+.chakra-button {
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.chakra-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-neumorph);
+}
+
+.chakra-button:active {
+  transform: scale(0.98);
+}
+
+/* Shine effect */
+.chakra-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: 0.5s;
+}
+.chakra-button:hover::before {
+  left: 100%;
+}
+
+/* ==========================================================================
+   4. Inputs & Forms
+   ========================================================================== */
+.chakra-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: 2px solid #e5e7eb;
+  background: #fff;
+  font-size: 1rem;
+  transition: var(--transition);
+  box-shadow: inset var(--shadow-neumorph);
+}
+
+.chakra-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  outline: none;
+}
+
+/* ==========================================================================
+   5. Cards / Status
+   ========================================================================== */
+.status-card {
+  background: var(--background-secondary);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-glass);
+  transition: var(--transition);
+}
+
+.status-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-neumorph);
+}
+
+/* ==========================================================================
+   6. Tables
+   ========================================================================== */
+.chakra-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-glass);
+}
+
+.chakra-table thead {
+  background: var(--primary-gradient);
+  color: #fff;
+}
+
+.chakra-table th,
+.chakra-table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.chakra-table tbody tr {
+  transition: var(--transition);
+}
+
+.chakra-table tbody tr:hover {
+  background: #f3f4f6;
+  transform: scale(1.01);
+}
+
+/* ==========================================================================
+   7. Animations
+   ========================================================================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+/* ==========================================================================
+   8. Dark Mode
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-primary: #111827;
+    --background-secondary: rgba(31, 41, 55, 0.8);
+    --background-tertiary: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+  }
+}
