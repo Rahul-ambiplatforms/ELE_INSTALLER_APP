@@ -469,6 +469,7 @@ const AutoInstaller = () => {
       });
 
       let installed_status = 1;
+      let status= "RUNNING";
       console.log(
         "Submitted:",
         deviceId,
@@ -481,7 +482,8 @@ const AutoInstaller = () => {
         excelLocation,
         latitude,
         longitude,
-        installed_status
+        installed_status,
+        status
       );
       const response = await installCamera(
         deviceId,
@@ -495,6 +497,7 @@ const AutoInstaller = () => {
         latitude,
         longitude,
         installed_status,
+        status,
         formattedDate,
         formattedTime
       );

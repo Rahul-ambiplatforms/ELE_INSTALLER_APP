@@ -435,7 +435,7 @@ export const verifyOtp = async (mobile, otp) => {
   }
 };
 
-export const installCamera = async (deviceId, name, mobile, assemblyName, psNumber, state, district, excelLocation, latitude, longitude, installed_status, date, time, remarks) => {
+export const installCamera = async (deviceId, name, mobile, assemblyName, psNumber, state, district, excelLocation, latitude, longitude, installed_status, status ,date, time, remarks) => {
   try {
 
     const response = await instance.post('/create', {
@@ -452,7 +452,8 @@ export const installCamera = async (deviceId, name, mobile, assemblyName, psNumb
       installed_status: installed_status,
       date: date,
       time: time,
-      remarks: remarks
+      remarks: remarks,
+      status : status
     });
 
     console.log(response.data);
