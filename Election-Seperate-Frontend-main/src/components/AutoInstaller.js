@@ -55,6 +55,7 @@ import TawkToWidget from "./tawkto";
 import { LuFlipHorizontal2, LuFlipVertical2 } from "react-icons/lu";
 import Autosuggest from "react-autosuggest";
 import { IoIosRefresh } from "react-icons/io";
+import { FaExclamationTriangle } from 'react-icons/fa';
 import { Link } from "react-router-dom";
 
 const AutoInstaller = () => {
@@ -76,6 +77,7 @@ const AutoInstaller = () => {
   const [blackviewChecked, setBlackviewChecked] = useState(false);
   const [brightnessChecked, setBrightnessChecked] = useState(false);
   const [blackAndWhiteChecked, setBlackAndWhiteChecked] = useState(false);
+   const [cameraAngleAcceptable, setCameraAngleAcceptable] = useState(true);
 
   // useRef to hold the interval ID
   const toastInterval = useRef(null);
@@ -120,7 +122,7 @@ const AutoInstaller = () => {
             // );
 
             const responsee = await axios.get(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyBNBVfpAQqikexY-8J0QDyBR4bWKiKe7OA`
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyBNBVfpAQqikexY-8J0QDyBR4bWKiKe`
             );
             setAddress(responsee.data.results[0].formatted_address);
             setStateu(
@@ -287,7 +289,7 @@ const AutoInstaller = () => {
       const status = await getCameraStatus(deviceId);
 
       if (status.success === false) {
-        // console.log("Api status false");
+        console.log("Api status false");
         setCameraStatus(null); // Set state to null to indicate no data
         return;
       } else {
@@ -297,22 +299,12 @@ const AutoInstaller = () => {
         setBlackviewChecked(status.blackview);
         setBrightnessChecked(status.brightness);
         setBlackAndWhiteChecked(status.BlackAndWhite);
+          const cameraAngle = Math.abs(status.camera_angle);
+           setCameraAngleAcceptable(cameraAngle <= 15);
 
-        // Handle Camera Angle and Toast
-        const cameraAngle = Math.abs(status.camera_angle);
+        // Handle Camera Angle
         if (cameraAngle > 15) {
           if (!toastInterval.current) {
-            //     // Show toast immediately
-            //     toast.warn("Try to adjust the angle of camera. The angle of camera should be in range of 0-15 degree", {
-            //         position: "top-right",
-            //         autoClose: 5000,
-            //         hideProgressBar: false,
-            //         closeOnClick: true,
-            //         pauseOnHover: true,
-            //         draggable: true,
-            //     });
-
-            // Set interval to show toast every 15 seconds
             toastInterval.current = setInterval(() => {
               toast.warn(
                 "Try to adjust the angle of camera. The angle of camera should be in range of 0-15 degree",
@@ -328,7 +320,6 @@ const AutoInstaller = () => {
             }, 9000); // 15000 milliseconds = 15 seconds
           }
         } else {
-          // If the angle is proper, clear any existing interval
           clearInterval(toastInterval.current);
           toastInterval.current = null;
         }
@@ -374,8 +365,7 @@ const AutoInstaller = () => {
           pauseOnHover: true,
           draggable: true,
         });
-      }
-    } catch (error) {
+    }} catch (error) {
       console.error("Error fetching camera status:", error);
       // Handle the error as needed (e.g., display an error message)
     }
@@ -417,7 +407,7 @@ const AutoInstaller = () => {
 
       console.log("External API Response:", response.data);
       // Handle the response from the external API as needed
-      toast.success("Successfully triggered external API", {
+      toast.success("Successfully Fetched Camera Status", {
         position: "top-right",
         autoClose: 3500,
         hideProgressBar: false,
@@ -681,6 +671,30 @@ const AutoInstaller = () => {
     },
   };
 
+  const BlinkingWarningIcon = () => {
+    return (
+        <FaExclamationTriangle
+            color="orange"
+            style={{
+                animation: 'blink-animation 1s steps(5, start) infinite',
+            }}
+        />
+    );
+};
+
+//Css
+const customCSS = `
+@keyframes blink-animation {
+    to {
+        visibility: hidden;
+    }
+}
+
+.blink {
+    visibility: visible;
+    animation: blink-animation 1s steps(5, start) infinite;
+}
+`;
   return (
     <Container
       maxW="98vw"
@@ -688,6 +702,7 @@ const AutoInstaller = () => {
       px={{ base: "0", sm: "8" }}
       style={{ margin: "0px" }}
     >
+       <style>{customCSS}</style>
       {" "}
       {/*  py={{ base: '12', md: '24' }} */}
       <ToastContainer />
@@ -773,7 +788,7 @@ const AutoInstaller = () => {
               />
 
               {/* Camera Status Information (Inline Horizontal) */}
-              {cameraStatus ? ( // Conditional rendering
+              {cameraStatus ? (
                 <Flex
                   direction="row"
                   align="center"
@@ -798,8 +813,7 @@ const AutoInstaller = () => {
                     Camera Angle:
                   </Text>
                   <Text marginRight="1rem">
-                    {Math.abs(cameraStatus.camera_angle)}{" "}
-                    {/* Display absolute value */}
+                    {Math.abs(cameraStatus.camera_angle)} {/* Display absolute value */}
                   </Text>
                 </Flex>
               ) : (
@@ -819,44 +833,92 @@ const AutoInstaller = () => {
                   <Text>Please Wait...</Text>
                 </Flex>
               )}
-              {/*NEW: Checkboxes (Read-Only, Horizontal) */}
-              {cameraStatus ? (
-                <Flex
-                  spacing={5}
-                  direction="row"
-                  align="center"
-                  marginBottom="1.5rem"
-                  padding="0.5rem"
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                  bg="gray.50"
-                >
-                  <Checkbox
-                    isChecked={!blurChecked}
-                    isReadOnly
-                    marginRight="1rem"
-                  >
-                    No Blur
-                  </Checkbox>
-                  <Checkbox
-                    isChecked={!blackviewChecked}
-                    isReadOnly
-                    marginRight="1rem"
-                  >
-                    No Blackview
-                  </Checkbox>
-                  <Checkbox
-                    isChecked={brightnessChecked}
-                    isReadOnly
-                    marginRight="1rem"
-                  >
-                    Brightness
-                  </Checkbox>
-                  <Checkbox isChecked={!blackAndWhiteChecked} isReadOnly>
-                    No Black and White
-                  </Checkbox>
-                </Flex>
-              ) : null}
+
+              {/* NEW: Checkboxes (Read-Only, Horizontal) */}
+{cameraStatus ? (
+  <Flex
+    spacing={5}
+    direction="row"
+    align="center"
+    marginBottom="1.5rem"
+    padding="0.5rem"
+    border="1px solid #E2E8F0"
+    borderRadius="md"
+    bg="gray.50"
+    gap="2rem" // spacing between items
+  >
+    {/* Blur */}
+    <Flex align="center" gap="0.5rem">
+      {!blurChecked ? (
+        <Checkbox isChecked={!blurChecked} isReadOnly>
+          No Blur
+        </Checkbox>
+      ) : (
+        <>
+          <BlinkingWarningIcon />
+          <Text>No Blur</Text>
+        </>
+      )}
+    </Flex>
+
+    {/* Blackview */}
+    <Flex align="center" gap="0.5rem">
+      {!blackviewChecked ? (
+        <Checkbox isChecked={!blackviewChecked} isReadOnly>
+          No Blackview
+        </Checkbox>
+      ) : (
+        <>
+          <BlinkingWarningIcon />
+          <Text>No Blackview</Text>
+        </>
+      )}
+    </Flex>
+
+    {/* Brightness */}
+    <Flex align="center" gap="0.5rem">
+      {brightnessChecked ? (
+        <Checkbox isChecked={brightnessChecked} isReadOnly>
+          Brightness
+        </Checkbox>
+      ) : (
+        <>
+          <BlinkingWarningIcon />
+          <Text>Brightness</Text>
+        </>
+      )}
+    </Flex>
+
+    {/* Black & White */}
+    <Flex align="center" gap="0.5rem">
+      {!blackAndWhiteChecked ? (
+        <Checkbox isChecked={!blackAndWhiteChecked} isReadOnly>
+          No Black and White
+        </Checkbox>
+      ) : (
+        <>
+          <BlinkingWarningIcon />
+          <Text>No Black and White</Text>
+        </>
+      )}
+    </Flex>
+
+    {/* Camera Angle */}
+    <Flex align="center" gap="0.5rem">
+      {cameraAngleAcceptable ? (
+        <Checkbox isChecked={cameraAngleAcceptable} isReadOnly>
+          Camera Angle Acceptable
+        </Checkbox>
+      ) : (
+        <>
+          <BlinkingWarningIcon />
+          <Text>Camera Angle Acceptable</Text>
+        </>
+      )}
+    </Flex>
+  </Flex>
+) : null}
+
 
               <div
                 style={{
@@ -936,7 +998,7 @@ const AutoInstaller = () => {
             </>
           )}
           {!showAdditionalInputs ? (
-            <Button mt={4} onClick={handleAddInputs}>
+            <Button mt={12} onClick={handleAddInputs}>
               Camera DID Info
             </Button>
           ) : (
