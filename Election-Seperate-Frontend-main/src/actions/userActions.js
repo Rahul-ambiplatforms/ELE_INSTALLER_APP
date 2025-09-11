@@ -3,7 +3,7 @@ import axios from 'axios';
 // const baseURL = 'http://192.168.29.33:7073/election';
 // const baseURL = 'https://seahorse-app-2-3o2pf.ondigitalocean.app/election';
 // const baseURL = 'http://192.168.29.123:7073/election';
-const baseURL = 'http://localhost:7075/election';
+const baseURL = 'https://starfish-app-q44cz.ondigitalocean.app/backend/election';
 
 const instance = axios.create({
   baseURL: baseURL

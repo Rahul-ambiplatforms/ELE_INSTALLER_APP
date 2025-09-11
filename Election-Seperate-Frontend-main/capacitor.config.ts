@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.espvmukti.app',
+  appId: 'com.vesp.app',
   appName: 'ESP-Vmukti',
   webDir: 'build',
   android: {
@@ -9,8 +9,8 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: true,
   },
   server: {
-    cleartext: false, 
-    url:"https://esp.vmukti.com",
+    cleartext: true, 
+    url:"https://starfish-app-q44cz.ondigitalocean.app/",
   },
 };
 
