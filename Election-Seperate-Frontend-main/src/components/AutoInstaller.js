@@ -396,7 +396,7 @@ const AutoInstaller = () => {
 
       // Make the POST request to the external API
       const response = await axios.post(
-        "http://4.213.225.23:8000/analyze-camera",
+        "https://installerapp.vmukti.com:8443/analyze-camera",
         postData,
         {
           headers: {
