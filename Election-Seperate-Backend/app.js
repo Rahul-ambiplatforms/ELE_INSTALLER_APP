@@ -64,6 +64,13 @@ app.use(cors({
 })); // Enable CORS
 app.use(morgan('dev')); // Enable logging
 
+// Health check / root route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is alive 🚀'
+  });
+});
 
 // const storage = multer.diskStorage({
 //     destination: function (req, file, cb) {
