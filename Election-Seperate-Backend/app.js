@@ -48,7 +48,7 @@ const bodyParser = require('body-parser');
 const connectDatabase = require('./config/database'); // Import database configuration
 
 const app = express();
-const port = 7075;
+const port = 8080;
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 // if (process.env.NODE_ENV !== 'production') {
