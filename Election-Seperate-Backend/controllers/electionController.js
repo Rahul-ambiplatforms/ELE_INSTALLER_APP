@@ -306,7 +306,7 @@ exports.signin = async (req, res, next) => {
             mobile: mobile
         })
 
-        axios.get(`https://msg.spinningdisk.in/api/mt/SendSMS?APIkey=KkM6mThjUkK2MqlqYcDfgA&senderid=VMUKTI&channel=Trans&DCS=0&flashsms=0&number=${mobile}&text=Your%20OTP%20for%20ELECTION%20SYSTEM%20LOGIN%20IS:%20${otp}%20-%20VMukti&route=2&Peid=1001048565917831128&DLTTemplateId=1007059230104285847`)
+        axios.get(`https://message.spinningdisk.in/domestic/sendsms/bulksms_v2.php?apikey=Vk11a3RpOmF1RG4zS1Zs&type=TEXT&sender=VMUKTI&entityId=1001048565917831128&templateId=1007059230104285847&mobile=${mobile}&message=Your OTP for ELECTION SYSTEM LOGIN IS:${otp} - VMukti`)
             .then(response => {
                 console.log('Response:', response.data);
             })
@@ -324,7 +324,7 @@ exports.signin = async (req, res, next) => {
         const otp = generateOTP();
         otpStorage[mobile] = otp;
 
-        axios.get(`https://msg.spinningdisk.in/api/mt/SendSMS?APIkey=KkM6mThjUkK2MqlqYcDfgA&senderid=VMUKTI&channel=Trans&DCS=0&flashsms=0&number=${mobile}&text=Your%20OTP%20for%20ELECTION%20SYSTEM%20LOGIN%20IS:%20${otp}%20-%20VMukti&route=2&Peid=1001048565917831128&DLTTemplateId=1007059230104285847`)
+        axios.get(`https://message.spinningdisk.in/domestic/sendsms/bulksms_v2.php?apikey=Vk11a3RpOmF1RG4zS1Zs&type=TEXT&sender=VMUKTI&entityId=1001048565917831128&templateId=1007059230104285847&mobile=${mobile}&message=Your OTP for ELECTION SYSTEM LOGIN IS:${otp} - VMukti`)
             .then(response => {
                 console.log('Response:', response.data);
             })
