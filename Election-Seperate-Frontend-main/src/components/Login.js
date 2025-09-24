@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { login, verifyOtp } from "../actions/userActions";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import logo from './images/logo/Vmuktilogo.png';
 
 const Login = () => {
   const [name, setName] = useState("");
@@ -201,22 +202,31 @@ const Login = () => {
     fontWeight: "700",
     lineHeight: "20px",
     color: "#3F77A5",
-    margin: "0.20rem", //Added small margin for spacing
+    margin: "0.10rem", //Added small margin for spacing
   };
 
-  return (
+  return (<div style={{
+      position: "fixed",
+      width: "100%",
+      height: "100%",
+      left: 0,
+      top: 0,
+      background: "#F4F4F5",
+      zIndex: 10,
+    }}>
     <Container
       maxW="lg"
       py={{ base: "12", md: "24" }}
       px={{ base: "0", sm: "8" }}
-      bg="#F4F4F5"
-      width="375px"
-      height="812px"
+      
+      
     >
       <ToastContainer />
       <Stack spacing="8">
         <Stack spacing="6">
           <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
+             <Heading  display='flex' justifyContent='center' alignItems='center'><img width="157px"
+            height= "40px" src={logo} />&nbsp;</Heading>
             <Heading
               fontSize="30px"
               fontWeight="700"
@@ -231,6 +241,7 @@ const Login = () => {
             </Heading>
           </Stack>
         </Stack>
+        
         <Box
           py={{ base: "0", sm: "8" }}
           px={{ base: "4", sm: "10" }}
@@ -239,7 +250,7 @@ const Login = () => {
           borderRadius={{ base: "none", sm: "xl" }}
         >
           <Stack spacing="5">
-            <FormControl right="55px">
+            <FormControl>
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input
                 id="name"
@@ -248,13 +259,12 @@ const Login = () => {
                 bg="white"
                 value={name}
                 onChange={handleNameChange}
-                height="44px"
-                width="342px"
+               
               />
             </FormControl>
-            <FormControl right="55px">
+            <FormControl >
               <FormLabel htmlFor="mobile">Mobile Number</FormLabel>
-              <InputGroup height="44px" width="342px">
+              <InputGroup height="44px" width="325px">
                 <InputLeftAddon children="+91" />
                 <Input
                   id="mobile"
@@ -263,17 +273,17 @@ const Login = () => {
                   bg="white"
                   value={mobile}
                   onChange={handleMobileChange}
-                  height="44px"
-                  width="342px"
+                  
                 />
               </InputGroup>
             </FormControl>
             {otpSent && (
-              <FormControl right="55px">
+              <FormControl >
                 <FormLabel htmlFor="otp">OTP</FormLabel>
                 <HStack>
                   {otp.map((digit, index) => (
                     <Input
+                    
                       key={index}
                       type="text"
                       maxLength="1"
@@ -288,70 +298,143 @@ const Login = () => {
               </FormControl>
             )}
           </Stack>
-          <Stack spacing="6">
-            {locationEnabled && !otpSent && (
-              <Button
-                onClick={handleSendOtp}
-                sx={{
-                  ...buttonBaseStyles,
-                  background: "#3F77A5",
-                  _hover: {
-                    background: "#305e82",
-                  },
-                }}
-              >
-                Send OTP
-              </Button>
-            )}
-            {!locationEnabled && (
-              <>
-                <Text color="red.500">Please enable location to proceed.</Text>
-              </>
-            )}
-
-            {otpSent && locationEnabled && (
-              <>
-                <Button
-                  onClick={handleSignIn}
-                  marginBottom="100px"
-                  sx={{
-                    ...buttonBaseStyles,
-                    background: "#3F77A5",
-                    _hover: {
-                      background: "#305e82",
-                    },
-                  }}
-                >
-                  Sign In
-                </Button>
-                <HStack justify="flex-end" align="flex-end">
-                  {resendDisabled ? (
-                    <Text fontSize="sm" color="red.500" opacity={1}>
-                      Resend OTP ({resendTimer})
-                    </Text>
-                  ) : (
-                    <Text
-                      color="blue.500"
-                      cursor="pointer"
-                      onClick={handleSendOtp}
-                      opacity={resendDisabled ? 0.5 : 1}
-                    >
-                      Resend OTP
-                    </Text>
-                  )}
-                </HStack>
-              </>
-            )}
-
-            <HStack>
-              <Divider />
-              <Divider />
-            </HStack>
-          </Stack>
+         
         </Box>
+        
       </Stack>
+      
     </Container>
+    
+ <Stack spacing="6">
+  {locationEnabled && !otpSent && (
+  <Button
+    onClick={handleSendOtp}
+    sx={{
+      position: "fixed",
+      bottom: "5",
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "325px",
+      height: "44px",
+      flexShrink: 0,
+      borderRadius: "8px",
+      fontFamily: "Inter",
+      fontSize: "14px",
+      fontStyle: "normal",
+      fontWeight: "700",
+      lineHeight: "24px",
+      textAlign: "center",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      border: "none",
+      cursor: "pointer",
+      transition: "background-color 0.2s ease",
+      color: "white",
+      background: "#3F77A5",
+      _hover: {
+        background: "#305e82",
+      },
+    }}
+  >
+    Send OTP
+  </Button>
+)}
+
+
+  {!locationEnabled && (
+    <Text color="red.500">Please enable location to proceed.</Text>
+  )}
+
+  {otpSent && locationEnabled && (
+    <>
+   <div
+  style={{
+    position: "fixed",
+    bottom: "0",
+    left: "0",
+    width: "100%",
+    height: "75px", // Adjust as needed
+    backgroundColor: "white", // Black background
+    zIndex: 9, // Behind the button
+    borderRadius :"16px 16px 0 0"
+  }}
+>
+  <Button
+    onClick={handleSignIn}
+    sx={{
+      position: "fixed",
+      bottom: "3", // Adjusted so it's inside the black bar
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "325px",
+      height: "44px",
+      flexShrink: 0,
+      borderRadius: "8px",
+      fontFamily: "Inter",
+      fontSize: "14px",
+      fontStyle: "normal",
+      fontWeight: "700",
+      lineHeight: "24px",
+      textAlign: "center",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      border: "none",
+      cursor: "pointer",
+      transition: "background-color 0.2s ease",
+      color: "white",
+      background: "#3F77A5",
+      zIndex: 10,
+      _hover: {
+        background: "#305e82",
+      },
+    }}
+  >
+    Sign In
+  </Button>
+</div>
+
+
+      <Box
+  width="100%"
+  display="flex"
+  justifyContent="flex-end"
+  mb="2"
+  pr="2"
+  position="relative"
+  top="-10px"
+>
+  {resendDisabled ? (
+    <Text fontSize="sm" color="red.500">
+      Resend OTP ({resendTimer})
+    </Text>
+  ) : (
+    <Text
+      fontSize="sm"
+      color="blue.500"
+      cursor="pointer"
+      onClick={handleSendOtp}
+      opacity={resendDisabled ? 0.5 : 1}
+      _hover={{ textDecoration: "underline" }}
+    >
+      Resend OTP
+    </Text>
+  )}
+</Box>
+
+    </>
+  )}
+
+  <HStack>
+    <Divider />
+    <Divider />
+  </HStack>
+</Stack>
+
+</div>
   );
+  
 };
 
 export default Login;
