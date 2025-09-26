@@ -738,7 +738,7 @@ const handleToggleExpand = (id) => {
           alignItems: "center",
           position: "fixed",
           bottom: "20px",
-          left: "20px",
+          left: "20px",          
         }}
       ></div>
       {location ? (
@@ -1255,7 +1255,7 @@ const handleToggleExpand = (id) => {
                       playing={true}
                       controls={true}
                       position="fixed"
-                      width="342px"
+                      width="320px"
                       height="197px"
                     />
                     <Flex justifyContent="space-between" mt={4} mb={4}>
