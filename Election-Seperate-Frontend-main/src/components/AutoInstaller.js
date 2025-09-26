@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import "./auto-installer.css";
+import logo from "./images/logo/cam.png";
+// import "./auto-installer.css";
 import {
   Button,
   Container,
@@ -26,7 +27,11 @@ import {
   Th,
   Thead,
   Tr,
-  Checkbox, // Import Checkbox from Chakra UI
+  Checkbox,
+  border, // Import Checkbox from Chakra UI
+  Box,
+  Image,Grid,
+  Collapse
 } from "@chakra-ui/react";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -55,10 +60,21 @@ import TawkToWidget from "./tawkto";
 import { LuFlipHorizontal2, LuFlipVertical2 } from "react-icons/lu";
 import Autosuggest from "react-autosuggest";
 import { IoIosRefresh } from "react-icons/io";
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle } from "react-icons/fa";
 import { Link } from "react-router-dom";
+//import { FaSortAlphaDown, FaSortAlphaUp } from "react-icons/fa"; // Import sorting icons
+import sortIcon from "./images/logo/sort.png"; // Import the image
+import line from "./images/logo/line.png";
+import expand from "./images/logo/expand.png";
 
 const AutoInstaller = () => {
+
+// State
+const [expandedCameraId, setExpandedCameraId] = useState(null);
+
+const handleToggleExpand = (id) => {
+  setExpandedCameraId((prevId) => (prevId === id ? null : id));
+};
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState("");
   const [deviceId, setDeviceId] = useState("");
@@ -77,7 +93,7 @@ const AutoInstaller = () => {
   const [blackviewChecked, setBlackviewChecked] = useState(false);
   const [brightnessChecked, setBrightnessChecked] = useState(false);
   const [blackAndWhiteChecked, setBlackAndWhiteChecked] = useState(false);
-   const [cameraAngleAcceptable, setCameraAngleAcceptable] = useState(true);
+  const [cameraAngleAcceptable, setCameraAngleAcceptable] = useState(true);
 
   // useRef to hold the interval ID
   const toastInterval = useRef(null);
@@ -85,42 +101,29 @@ const AutoInstaller = () => {
   // useRef to hold the interval ID for camera status polling
   const cameraStatusInterval = useRef(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const camerasPerPage = 10; // Adjust as needed
+  const [cameraa, setCameraa] = useState([]); // Keep cameraa as state
+  const [sortOrder, setSortOrder] = useState("asc"); // 'asc' or 'desc'
+  const totalCameras = cameraa.length;
+  const totalPages = Math.ceil(totalCameras / camerasPerPage); // Calculate the number of pages
+
   useEffect(() => {
     camera();
     did();
 
-    // toast.success('Welcome', {
-    //   position: 'top-right',
-    //   autoClose: 1500, // 5 seconds
-    //   hideProgressBar: false,
-    //   closeOnClick: true,
-    //   pauseOnHover: true,
-
-    //   draggable: true,
-    // });
-
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
-          // Get latitude and longitude from the position object
           const { latitude, longitude } = position.coords;
 
-          // const latitude = 23.0282826;
-          // const longitude = 72.5398852;
           setLatie(latitude);
           setLongie(longitude);
 
-          // Set the location in state
           setLocation({ latitude, longitude });
 
-          // Fetch the city and state using OpenCage Geocoding API
           try {
-            // This part is incomplete; you need to provide the API endpoint and parameters
-            // const response = await axios.get(
-            //   // Provide your API endpoint and parameters here
-            //   `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=e2d4a93e63e344a8a223f8a41ced79c3`
-            // );
-
             const responsee = await axios.get(
               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyBNBVfpAQqikexY-8J0QDyBR4bWKiKe`
             );
@@ -128,14 +131,6 @@ const AutoInstaller = () => {
             setStateu(
               responsee.data.plus_code.compound_code.split(",")[1].toUpperCase()
             );
-
-            // if (response.data.results && response.data.results.length > 0) {
-            //   const city = response.data.results[0].components.suburb;
-            //   const state = response.data.results[0].components.state_district;
-            //   const district = response.data.results[0].components.state_district;
-            //   // setAddress(`${city}, ${district}, ${state}`);
-            //   console.log("locationnnnnnn", response.data.results[0].components.state)
-            // }
           } catch (error) {
             console.error("Error fetching address:", error.message);
           }
@@ -148,15 +143,14 @@ const AutoInstaller = () => {
       console.error("Geolocation is not supported by your browser.");
     }
 
-    // Clear the interval when the component unmounts
     return () => {
       console.log(
         "AutoInstaller component unmounting OR deviceId changed. Clearing intervals."
       );
       clearInterval(toastInterval.current);
-      clearInterval(cameraStatusInterval.current); // Clear the camera status interval
+      clearInterval(cameraStatusInterval.current);
     };
-  }, [deviceId]); // Empty dependency array to run the effect only once
+  }, [deviceId]);
 
   const handleGetData = async (deviceId, setting) => {
     const response = await getCameraByDid(deviceId);
@@ -181,23 +175,10 @@ const AutoInstaller = () => {
     );
   };
 
-  // const handleGetData = async (deviceId) => {
-  //   const response = await getCameraByDid(deviceId);
-  //   // setProurl(`tcp://${response.flvUrl.prourl}`);
-  //   // console.log(deviceId, `tcp://${response.flvUrl.prourl}`);
-  //   const getset = await getSetting(deviceId, response.flvUrl.prourl);
-  //   console.log("getSetting", getset.data.appSettings.imageCfg);
-
-  //   const modifiedData = { ...getset.data.appSettings.imageCfg };
-  //       modifiedData.flip = modifiedData.flip === 1 ? 0 : 1;
-
-  //       console.log("Modified data:", modifiedData);
-  // }
-
   const handleAddInputs = async () => {
     setShowAdditionalInputs(true);
-    clearInterval(cameraStatusInterval.current); // Clear existing interval
-    clearInterval(toastInterval.current); // Clear existing interval
+    clearInterval(cameraStatusInterval.current);
+    clearInterval(toastInterval.current);
     const response = await getCameraByDid(deviceId);
     if (!response?.flvUrl?.url2) {
       toast.error(
@@ -267,30 +248,30 @@ const AutoInstaller = () => {
     setDistrict(response.data.district);
     setExcelLocation(response.data.location);
 
-    // Call the function to send the URL to the external API
     sendUrlToExternalApi(response.flvUrl.url2);
 
-    //NEW: Get Camera Status and setup polling
     startCameraStatusPolling(deviceId);
   };
 
   const startCameraStatusPolling = (deviceId) => {
-    // Fetch camera status immediately when starting
     fetchCameraStatus(deviceId);
 
-    // Set up an interval to fetch the camera status periodically (e.g., every 5 seconds)
     cameraStatusInterval.current = setInterval(() => {
       fetchCameraStatus(deviceId);
-    }, 15000); // Adjust the interval as needed
+    }, 15000);
   };
 
   const fetchCameraStatus = async (deviceId) => {
+    const toastStyle = {
+        fontSize: '12px', // Smaller font
+        padding: '8px 12px', // Reduced padding
+    };
     try {
       const status = await getCameraStatus(deviceId);
 
       if (status.success === false) {
         console.log("Api status false");
-        setCameraStatus(null); // Set state to null to indicate no data
+        setCameraStatus(null);
         return;
       } else {
         console.log("Api status true");
@@ -299,10 +280,9 @@ const AutoInstaller = () => {
         setBlackviewChecked(status.blackview);
         setBrightnessChecked(status.brightness);
         setBlackAndWhiteChecked(status.BlackAndWhite);
-          const cameraAngle = Math.abs(status.camera_angle);
-           setCameraAngleAcceptable(cameraAngle <= 15);
+        const cameraAngle = Math.abs(status.camera_angle);
+        setCameraAngleAcceptable(cameraAngle <= 15);
 
-        // Handle Camera Angle
         if (cameraAngle > 15) {
           if (!toastInterval.current) {
             toastInterval.current = setInterval(() => {
@@ -315,9 +295,10 @@ const AutoInstaller = () => {
                   closeOnClick: true,
                   pauseOnHover: true,
                   draggable: true,
+                  style: toastStyle // Apply inline styles here
                 }
               );
-            }, 9000); // 15000 milliseconds = 15 seconds
+            }, 9000);
           }
         } else {
           clearInterval(toastInterval.current);
@@ -325,7 +306,6 @@ const AutoInstaller = () => {
         }
       }
 
-      // NEW: Check for blur, blackview, brightness, and blackAndWhite after setting state
       if (status.blur) {
         toast.warn("Camera is blur, try to fix it!", {
           position: "top-right",
@@ -365,24 +345,20 @@ const AutoInstaller = () => {
           pauseOnHover: true,
           draggable: true,
         });
-    }} catch (error) {
+      }
+    } catch (error) {
       console.error("Error fetching camera status:", error);
-      // Handle the error as needed (e.g., display an error message)
     }
   };
 
   const sendUrlToExternalApi = async (url2) => {
     try {
-      // Transform the URL and replace "https" with "rtmp"
       let rtmpUrl = url2.replace("https", "rtmp");
 
-      // Extract the hostname from the URL
       const url = new URL(rtmpUrl);
       const hostname = url.hostname;
 
-      // Check if the hostname contains a port number
       if (!hostname.includes(":")) {
-        // Add the port number to the hostname in the transformed URL
         rtmpUrl = rtmpUrl.replace(hostname, `${hostname}:80`);
       }
 
@@ -390,11 +366,9 @@ const AutoInstaller = () => {
 
       console.log("Transformed URL:", rtmpUrl);
 
-      // Prepare the data for the POST request
       const postData = { rtmp: rtmpUrl };
       console.log("My data is", postData);
 
-      // Make the POST request to the external API
       const response = await axios.post(
         "https://installerapp.vmukti.com:8443/analyze-camera",
         postData,
@@ -406,7 +380,6 @@ const AutoInstaller = () => {
       );
 
       console.log("External API Response:", response.data);
-      // Handle the response from the external API as needed
       toast.success("Successfully Fetched Camera Status", {
         position: "top-right",
         autoClose: 3500,
@@ -417,15 +390,6 @@ const AutoInstaller = () => {
       });
     } catch (error) {
       console.error("Error sending URL to external API:", error);
-      // Handle errors as needed
-      // toast.error('Failed to trigger external API', {
-      //     position: 'top-right',
-      //     autoClose: 3500,
-      //     hideProgressBar: false,
-      //     closeOnClick: true,
-      //     pauseOnHover: true,
-      //     draggable: true,
-      // });
     }
   };
 
@@ -459,7 +423,7 @@ const AutoInstaller = () => {
       });
 
       let installed_status = 1;
-      let status= "RUNNING";
+      let status = "RUNNING";
       console.log(
         "Submitted:",
         deviceId,
@@ -578,13 +542,19 @@ const AutoInstaller = () => {
     }
   };
 
-  const [cameraa, setCameraa] = useState([]);
   const camera = async () => {
     try {
       const mobile = localStorage.getItem("mobile");
       const result = await getCamera(mobile);
       console.log("cameras data", result.data);
-      setCameraa(result.data);
+
+      // Initial sort when data is fetched
+      const sortedData = [...result.data].sort((a, b) =>
+        a.deviceId.localeCompare(b.deviceId)
+      );
+
+      setCameraa(sortedData);
+      setCurrentPage(1); // Reset to first page when camera data updates
     } catch (error) {
     } finally {
     }
@@ -664,26 +634,34 @@ const AutoInstaller = () => {
     onChange: handleInputChange,
     placeholder: "Enter Device ID",
     style: {
-      width: "100%",
-      padding: "10px",
-      borderColor: "black",
-      borderWidth: "1px",
+      width: "240px",
+      height: "35px",
+      padding: "10px 14px",
+      borderRadius: "8px",
+      background: "#fff",
+      boxShadow: "inset 0 1px 2.4px rgba(0, 0, 0, 0.25)",
+      color: "black",
+      fontFamily: "'Wix Madefor Text'",
+      fontSize: "12px",
+      fontStyle: "normal",
+      fontWeight: 400,
+      lineHeight: "normal",
     },
   };
 
   const BlinkingWarningIcon = () => {
     return (
-        <FaExclamationTriangle
-            color="orange"
-            style={{
-                animation: 'blink-animation 1s steps(5, start) infinite',
-            }}
-        />
+      <FaExclamationTriangle
+        color="orange"
+        style={{
+          animation: "blink-animation 1s steps(5, start) infinite",
+        }}
+      />
     );
-};
+  };
 
-//Css
-const customCSS = `
+  //Css
+  const customCSS = `
 @keyframes blink-animation {
     to {
         visibility: hidden;
@@ -695,15 +673,53 @@ const customCSS = `
     animation: blink-animation 1s steps(5, start) infinite;
 }
 `;
+
+  // Pagination functions
+  const handleClick = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  // Calculate the start and end index for the current page
+  const startIndex = (currentPage - 1) * camerasPerPage;
+  const endIndex = Math.min(startIndex + camerasPerPage, totalCameras);
+
+  // Get the cameras to display on the current page
+  const camerasOnPage = cameraa.slice(startIndex, endIndex);
+
+  // Sorting function
+  const handleSort = () => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+
+    const sortedData = [...cameraa].sort((a, b) => {
+      const psNoA = a.psNo; // Access PS No. directly
+      const psNoB = b.psNo;
+
+      if (newSortOrder === "asc") {
+        return psNoA - psNoB; // Sort numerically ascending
+      } else {
+        return psNoB - psNoA; // Sort numerically descending
+      }
+    });
+
+    setCameraa(sortedData);
+    setCurrentPage(1);
+  };
+  const HorizontalLine = () => (
+    <Box width="100%" height="2px" background="#3F77A5" mb={2} />
+  );
+
   return (
     <Container
-      maxW="98vw"
+      backgroundColor="#F4F4F5"
+      maxW="100vw"
       p={4}
       px={{ base: "0", sm: "8" }}
       style={{ margin: "0px" }}
     >
-       <style>{customCSS}</style>
-      {" "}
+      <style>{customCSS}</style>
       {/*  py={{ base: '12', md: '24' }} */}
       <ToastContainer />
       <div
@@ -724,12 +740,7 @@ const customCSS = `
           bottom: "20px",
           left: "20px",
         }}
-      >
-        <Button onClick={refresh}>
-          <IoIosRefresh />
-          &nbsp;Refresh
-        </Button>
-      </div>
+      ></div>
       {location ? (
         <>
           {isMobileDevice && (
@@ -753,10 +764,10 @@ const customCSS = `
               display: "flex",
               flexWrap: "nowrap",
               alignItems: "center",
+              justifyContent: "center", // Add this line to center horizontally
             }}
           >
-            <Text style={{ width: "120px" }}>DeviceID</Text>
-
+            {/* <Text style={{ width: "120px" }}>DeviceID</Text> */}
             {suggestions && suggestions.length >= 0 ? (
               <Autosuggest
                 suggestions={suggestions}
@@ -783,11 +794,10 @@ const customCSS = `
                 playing={true}
                 controls={true}
                 width="100%"
-                height="400px"
-                style={{ marginBottom: "1rem" }} // Add spacing below the video
+                height="50%"
+                style={{ marginBottom: "1rem" }}
               />
 
-              {/* Camera Status Information (Inline Horizontal) */}
               {cameraStatus ? (
                 <Flex
                   direction="row"
@@ -798,23 +808,32 @@ const customCSS = `
                   border="1px solid #E2E8F0"
                   borderRadius="md"
                   bg="gray.50"
+                  width="342px"
+                  height="54px"
+                  flex-shrink="0"
                 >
-                  <Text fontWeight="bold" marginRight="0.5rem">
+                  <Text marginRight="0.5rem" fontFamily="Wix Madefor Text">
                     Resolution:
                   </Text>
-                  <Text marginRight="1rem">{cameraStatus.resolution}</Text>
-
-                  <Text fontWeight="bold" marginRight="0.5rem">
-                    FPS:
+                  <Text marginRight="1rem" fontFamily="Wix Madefor Text">
+                    {cameraStatus.resolution}
                   </Text>
-                  <Text marginRight="1rem">{cameraStatus.fps}</Text>
 
-                  <Text fontWeight="bold" marginRight="0.5rem">
+                  <Text marginRight="0.5rem" fontFamily="Wix Madefor Text">
                     Camera Angle:
                   </Text>
-                  <Text marginRight="1rem">
-                    {Math.abs(cameraStatus.camera_angle)} {/* Display absolute value */}
+                  <Text marginRight="1rem" fontFamily="Wix Madefor Text">
+                    {Math.abs(cameraStatus.camera_angle)}
                   </Text>
+
+                  <Text marginRight="0.5rem" fontFamily="Wix Madefor Text">
+                    FPS:
+                  </Text>
+                  <Text marginRight="1rem" fontFamily="Wix Madefor Text">
+                    {cameraStatus.fps}{" "}
+                  </Text>
+
+                  
                 </Flex>
               ) : (
                 <Flex
@@ -824,8 +843,8 @@ const customCSS = `
                   padding="0.5rem"
                   border="1px solid #E2E8F0"
                   borderRadius="md"
-                  bg="red.100" // Light red background
-                  color="red.600" // Darker red text
+                  bg="red.100"
+                  color="red.600"
                 >
                   <Text fontWeight="bold" marginRight="0.5rem">
                     Fetching Camera Status...
@@ -833,118 +852,127 @@ const customCSS = `
                   <Text>Please Wait...</Text>
                 </Flex>
               )}
+              <h1
+                style={{
+                  fontFamily: "Wix Madefor Text",
+                  fontSize: "14px",
+                  fontStyle: "normal",
+                  fontWeight: 500,
+                  lineHeight: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                &nbsp;&nbsp;Camera Feed Status
+                <img
+                  src={line}
+                  alt="Line"
+                  style={{
+                    width: "200px",
+                    height: "1px",
+                    marginLeft: "10px",
+                    verticalAlign: "middle",
+                  }}
+                />
+              </h1>
 
-              {/* NEW: Checkboxes (Read-Only, Horizontal) */}
-{cameraStatus ? (
-  <Flex
-    spacing={5}
-    direction="row"
-    align="center"
-    marginBottom="1.5rem"
-    padding="0.5rem"
-    border="1px solid #E2E8F0"
-    borderRadius="md"
-    bg="gray.50"
-    gap="2rem" // spacing between items
-  >
-    {/* Blur */}
-    <Flex align="center" gap="0.5rem">
-      {!blurChecked ? (
-        <Checkbox isChecked={!blurChecked} isReadOnly>
-          No Blur
-        </Checkbox>
+              {cameraStatus ? (
+                <Flex
+  wrap="wrap"
+  gap="0.1rem"
+  mt="1.5rem"
+  mb="1.5rem"
+  px="0.5rem"
+>
+  {[
+   { label: blurChecked ? "Blur" : "No Blur", checked: !blurChecked },
+  { label: blackviewChecked ? "Black View" : "No Black View", checked: !blackviewChecked },
+  { label: "Brightness", checked: brightnessChecked },
+  { label: blackAndWhiteChecked ? "Black & White" : "No Black & White", checked: !blackAndWhiteChecked },
+  { label: cameraAngleAcceptable ? "Camera Angle OK" : "Camera Angle Issue", checked: cameraAngleAcceptable },
+  ].map(({ label, checked }, index) => (
+    <Flex
+      key={index}
+      direction="column"
+      align="center"
+      gap="0.3rem"
+      width="66px" // Controls width so all items are same size and fit one line
+    >
+      {checked ? (
+        <Checkbox
+          isChecked={checked}
+          isReadOnly
+          sx={{
+            ".chakra-checkbox__control": {
+              width: "18px",
+              height: "18px",
+              borderRadius: "50%",
+              border: "2px solid #7BC111",
+              backgroundColor: "white",
+              _checked: {
+                backgroundColor: "#7BC111",
+                color: "white",
+                borderColor: "#7BC111",
+              },
+            },
+            ".chakra-checkbox__icon": {
+              fontSize: "10px",
+            },
+          }}
+        />
       ) : (
-        <>
-          <BlinkingWarningIcon />
-          <Text>No Blur</Text>
-        </>
+        <BlinkingWarningIcon boxSize="18px" />
       )}
+      <Text
+        fontSize="10px"
+        fontWeight="500"
+        textAlign="center"
+        lineHeight="1.2"
+        whiteSpace="normal"
+      >
+        {label}
+      </Text>
     </Flex>
+  ))}
+</Flex>
 
-    {/* Blackview */}
-    <Flex align="center" gap="0.5rem">
-      {!blackviewChecked ? (
-        <Checkbox isChecked={!blackviewChecked} isReadOnly>
-          No Blackview
-        </Checkbox>
-      ) : (
-        <>
-          <BlinkingWarningIcon />
-          <Text>No Blackview</Text>
-        </>
-      )}
-    </Flex>
-
-    {/* Brightness */}
-    <Flex align="center" gap="0.5rem">
-      {brightnessChecked ? (
-        <Checkbox isChecked={brightnessChecked} isReadOnly>
-          Brightness
-        </Checkbox>
-      ) : (
-        <>
-          <BlinkingWarningIcon />
-          <Text>Brightness</Text>
-        </>
-      )}
-    </Flex>
-
-    {/* Black & White */}
-    <Flex align="center" gap="0.5rem">
-      {!blackAndWhiteChecked ? (
-        <Checkbox isChecked={!blackAndWhiteChecked} isReadOnly>
-          No Black and White
-        </Checkbox>
-      ) : (
-        <>
-          <BlinkingWarningIcon />
-          <Text>No Black and White</Text>
-        </>
-      )}
-    </Flex>
-
-    {/* Camera Angle */}
-    <Flex align="center" gap="0.5rem">
-      {cameraAngleAcceptable ? (
-        <Checkbox isChecked={cameraAngleAcceptable} isReadOnly>
-          Camera Angle Acceptable
-        </Checkbox>
-      ) : (
-        <>
-          <BlinkingWarningIcon />
-          <Text>Camera Angle Acceptable</Text>
-        </>
-      )}
-    </Flex>
-  </Flex>
-) : null}
-
+              ) : null}
 
               <div
                 style={{
-                  display: "flex",
-                  flexWrap: "nowrap",
+                 // display: "flex",
+                  //flexWrap: "nowrap",
                   alignItems: "center",
                   marginBottom: "0.75rem",
+                  padding:"10px"
                 }}
               >
-                <Text style={{ width: "120px",fontWeight: "bold" }}>State</Text>
+                <Text style={{ width: "120px", fontWeight:500, fontFamily: "Wix Madefor Text"}}>
+                  &nbsp; State
+                </Text>
                 <Input
+                  background= "#FFF"
+                  fontWeight="500" fontFamily= "Wix Madefor Text" fontSize= "12px" 
                   value={state}
                   onChange={(e) => setState(e.target.value.toUpperCase())}
-                  placeholder="district"
+                  placeholder= "district"
+                  
                 />
               </div>
               <div
                 style={{
-                  display: "flex",
-                  flexWrap: "nowrap",
+                  // display: "flex",
+                  // flexWrap: "nowrap",
                   alignItems: "center",
                   marginBottom: "0.75rem",
+                  padding:"10px"
                 }}
               >
-               <Text style={{ width: "120px", fontWeight: "bold" }}>District</Text>
+                <Text style={{ width: "120px", fontWeight:500, fontFamily: "Wix Madefor Text"}}>
+                  &nbsp; District
+                </Text>
                 <Input
+                   background= "#FFF"  fontWeight="500" fontFamily= "Wix Madefor Text" fontSize= "12px"
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
                   placeholder="district"
@@ -952,14 +980,18 @@ const customCSS = `
               </div>
               <div
                 style={{
-                  display: "flex",
-                  flexWrap: "nowrap",
+                  // display: "flex",
+                  // flexWrap: "nowrap",
                   alignItems: "center",
                   marginBottom: "0.75rem",
+                  padding:"10px"
                 }}
               >
-                <Text style={{ width: "120px",fontWeight: "bold" }}>Assembly</Text>
+                <Text style={{ width: "120px", fontWeight:500, fontFamily: "Wix Madefor Text"}}>
+                  &nbsp; Assembly
+                </Text>
                 <Input
+                 background= "#FFF"  fontWeight="500" fontFamily= "Wix Madefor Text" fontSize= "12px"
                   value={assemblyName}
                   onChange={(e) => setAssemblyName(e.target.value)}
                   placeholder="assemblyName"
@@ -967,14 +999,18 @@ const customCSS = `
               </div>
               <div
                 style={{
-                  display: "flex",
-                  flexWrap: "nowrap",
+                  // display: "flex",
+                  // flexWrap: "nowrap",
                   alignItems: "center",
                   marginBottom: "0.75rem",
+                  padding:"10px"
                 }}
               >
-                <Text style={{ width: "120px",fontWeight: "bold" }}>PsNo.</Text>
+                <Text style={{ width: "120px", fontWeight:500, fontFamily: "Wix Madefor Text"}}>
+                  &nbsp; PsNo.
+                </Text>
                 <Input
+                 background= "#FFF"  fontWeight="500" fontFamily= "Wix Madefor Text" fontSize= "12px"
                   value={psNumber}
                   onChange={(e) => setPsNumber(e.target.value)}
                   placeholder="psNumber"
@@ -982,14 +1018,18 @@ const customCSS = `
               </div>
               <div
                 style={{
-                  display: "flex",
-                  flexWrap: "nowrap",
+                  // display: "flex",
+                  // flexWrap: "nowrap",
                   alignItems: "center",
                   marginBottom: "0.75rem",
+                  padding:"10px"
                 }}
               >
-                <Text style={{ width: "120px" , fontWeight: "bold"}}>Location</Text>
+                <Text style={{ width: "120px", fontWeight:500, fontFamily: "Wix Madefor Text"}}>
+                  &nbsp; Location
+                </Text>
                 <Input
+                 background= "#FFF"  fontWeight="500" fontFamily= "Wix Madefor Text" fontSize= "12px"
                   value={excelLocation}
                   onChange={(e) => setExcelLocation(e.target.value)}
                   placeholder="excelLocation"
@@ -998,189 +1038,209 @@ const customCSS = `
             </>
           )}
           {!showAdditionalInputs ? (
-            <Button mt={12} onClick={handleAddInputs}>
-              Camera DID Info
-            </Button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                border-radius="8px"
+                background="#3F77A5"
+                width="200px"
+                height="40px"
+                color="white"
+                onClick={handleAddInputs}
+              >
+                Camera DID Info
+              </Button>
+            </div>
           ) : (
-            <>
-              <Button onClick={handleSubmit}>Submit</Button>
+            <> <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button 
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                 width="200px"
+                height="40px"
+                border-radius="8px"
+                background="#3F77A5"
+                color="white"
+              onClick={handleSubmit}>Submit</Button>
+              </div>
             </>
           )}
 
           <br />
           <br />
           <br />
-          <TableContainer w={"full"}>
-            <Table
-              variant="striped"
-              colorScheme="teal"
-              borderWidth="1px"
-              borderColor="gray.200"
+
+          <h3
+            style={{
+              display: "flex",
+              justifyContent: "right",
+              alignItems: "right",
+              gap: "0.5rem",
+              textAlign: "right",
+              marginBottom: "15px",
+            }}
+          >
+            {/* <Text fontWeight="bold">Camera List</Text> */}
+            <Button
+              bg="#F4F4F5"
+              onClick={refresh}
+              height="24px"
+              fontFamily="Wix Madefor Text"
             >
-              <TableCaption>Your Installed Camera List</TableCaption>
-              <Thead>
-                <Tr>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    Sr.No.
-                  </Th>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    Device ID
-                  </Th>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    live
-                  </Th>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    Assembly Name
-                  </Th>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    Location
-                  </Th>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    District
-                  </Th>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    Ps No.
-                  </Th>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    last Live
-                  </Th>
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    Video Feed
-                  </Th>
+              <IoIosRefresh />
+              &nbsp;Refresh
+            </Button>
+            <Text fontWeight="bold" fontFamily="Wix Madefor Text" height="16px">
+              SORT {sortOrder === "asc" ? "(A-Z)" : "(Z-A)"}
+            </Text>
+            <img
+              src={sortIcon}
+              alt="Sort"
+              style={{
+                width: "16px",
+                height: "20px",
+                cursor: "pointer",
+              }}
+              onClick={handleSort}
+            />
+          </h3>
 
-                  <Th
-                    borderRight="1px"
-                    borderColor="gray.300"
-                    bgColor="black"
-                    color="white"
-                  >
-                    Edit/Delete
-                  </Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {cameraa.map((camera, index) => (
-                  <Tr
-                    key={camera.id}
-                    bg={index % 2 === 0 ? "gray.100" : "white"}
-                  >
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {index + 1}
-                    </Td>
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {camera.deviceId}
-                    </Td>
+      
+{camerasOnPage.map((camera) => (
+  <Box
+    key={camera.deviceId}
+    sx={{ borderBottom: "2px solid #3F77A5", pb: 2 }}
+    mb={4}
+    p={4}
+  >
+    <Flex justify="space-between" align="center" mb={3}>
+       <Box>
+      <Text fontWeight="bold" fontFamily="Wix Madefor Text">
+        Device ID: {camera.deviceId}
+      </Text>
+      </Box>
 
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {camera.status === "RUNNING" ? (
-                        <span>🟢</span>
-                      ) : (
-                        <span>🔴</span>
-                      )}
-                    </Td>
+      <Box>
+        <Text>{camera.status === "RUNNING" ? "🟢" : "🔴"}</Text>
+      </Box>
 
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {camera.assemblyName}
-                    </Td>
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {camera.location}
-                    </Td>
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {camera.district}
-                    </Td>
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {camera.psNo}
-                    </Td>
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {camera.lastSeen}
-                    </Td>
+      {/* Single expand/collapse image with rotation */}
+      <IconButton
+        aria-label="Expand/Collapse Details"
 
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {" "}
-                      <IconButton
-                        marginLeft={2}
-                        marginRight={2}
-                        onClick={() => handleViewCamera(camera)}
-                        colorScheme="blue"
-                        style={{ padding: 0, transform: "scale(0.8)" }}
-                        aria-label="View details"
-                      >
-                        <MdVisibility />
-                      </IconButton>{" "}
-                    </Td>
+        icon={
+          <Image
+            src={expand}
+             onClick={() => handleToggleExpand(camera.deviceId)}
+            alt="Expand"
+            sx={{
+              transform: expandedCameraId === camera.id ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.3s ease",
+            }}
+          />
+        }
+      />
+    </Flex>
 
-                    <Td borderRight="1px" borderColor="gray.300">
-                      {editableCameraID === camera.id ? (
-                        <Button
-                          onClick={() => handleUpdateClick(camera.deviceId)}
-                          colorScheme="green"
-                        >
-                          Update
-                        </Button>
-                      ) : (
-                        <>
-                          <div style={{ display: "flex" }}>
-                            <Button
-                              onClick={() => handleDeleteClick(camera.deviceId)}
-                              colorScheme="red"
-                              style={{ padding: 0 }}
-                            >
-                              <MdDelete style={{ color: "rgb(200,0,0)" }} />
-                            </Button>
-                          </div>
-                        </>
-                      )}
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TableContainer>
+    {/* Expanded View */}
+    {expandedCameraId === camera.deviceId && (
+      <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={2}>
+        <Box>
+          <Text fontFamily="Wix Madefor Text" fontWeight="bold">District</Text>
+          <Text fontFamily="Wix Madefor Text" >{camera.district}</Text>
+        </Box>
+
+        <Box>
+          <Text fontFamily="Wix Madefor Text" fontWeight="bold">Assembly Name</Text>
+          <Text fontFamily="Wix Madefor Text">{camera.assemblyName}</Text>
+        </Box>
+
+        <Box>
+          <Text fontFamily="Wix Madefor Text" fontWeight="bold">PS No.</Text>
+          <Text fontFamily="Wix Madefor Text">{camera.psNo}</Text>
+        </Box>
+
+        <Box>
+          <Text fontFamily="Wix Madefor Text" fontWeight="bold">Location</Text>
+          <Text fontFamily="Wix Madefor Text">{camera.location}</Text>
+        </Box>
+
+        <Box>
+          <Text  fontFamily="Wix Madefor Text" fontWeight="bold">Last Live</Text>
+          <Text fontFamily="Wix Madefor Text" >{camera.lastSeen}</Text>
+        </Box>
+        <Box>
+          <Text fontFamily="Wix Madefor Text" fontWeight="bold"></Text>
+          <Text fontFamily="Wix Madefor Text">{camera.lastSeen}</Text>
+        </Box>
+
+        <Box>
+          <Text fontFamily="Wix Madefor Text" fontWeight="bold">Video Feed</Text>
+          <IconButton
+            onClick={() => handleViewCamera(camera)}
+            colorScheme="blue"
+            size="sm"
+            aria-label="View"
+            icon={<MdVisibility />}
+          />
+        </Box>
+         <Box justifyContent="right" textAlign="right">
+          {editableCameraID === camera.id ? (
+            <Button
+              onClick={() => handleUpdateClick(camera.deviceId)}
+              colorScheme="green"
+              size="sm"
+            >
+              Update
+            </Button>
+          ) : (
+            <Button
+              onClick={() => handleDeleteClick(camera.deviceId)}
+              colorScheme="red"
+              size="sm"
+            >
+              <MdDelete />
+            </Button>
+          )}
+        </Box>
+
+
+
+      </Grid>
+    )}
+  </Box>
+))}
+
+
+          <h2
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "0.5rem",
+              textAlign: "center", // optional
+            }}
+          >
+            <img width="37px" height="37px" src={logo} alt="Camera Icon" />
+            {cameraa.length === 0
+              ? "No device added"
+              : "Your Installed Camera List"}
+          </h2>
 
           <Modal isOpen={showModal} onClose={handleCloseModal}>
             <ModalOverlay />
@@ -1194,8 +1254,9 @@ const customCSS = `
                       url={selectedCamera.flvUrl}
                       playing={true}
                       controls={true}
-                      width="100%"
-                      height="400px"
+                      position="fixed"
+                      width="342px"
+                      height="197px"
                     />
                     <Flex justifyContent="space-between" mt={4} mb={4}>
                       <Button
