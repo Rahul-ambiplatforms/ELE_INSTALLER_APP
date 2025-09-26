@@ -305,13 +305,24 @@ const Login = () => {
       
     </Container>
     
- <Stack spacing="6">
-  {locationEnabled && !otpSent && (
-  <Button
-    onClick={handleSendOtp}
-    sx={{
-      position: "fixed",
-      bottom: "5",
+ {locationEnabled && !otpSent && (
+  <div
+    style={{
+     position: "fixed",
+    bottom: "0",
+    left: "0",
+    width: "100%",
+    height: "75px", // Adjust as needed
+    backgroundColor: "white", // Black background
+    zIndex: 9, // Behind the button
+    borderRadius :"16px 16px 0 0"
+    }}
+  >
+    <Button
+      onClick={handleSendOtp}
+      sx={{
+         position: "fixed",
+      bottom: "3", // Adjusted so it's inside the black bar
       left: "50%",
       transform: "translateX(-50%)",
       width: "325px",
@@ -332,14 +343,17 @@ const Login = () => {
       transition: "background-color 0.2s ease",
       color: "white",
       background: "#3F77A5",
+      zIndex: 10,
       _hover: {
         background: "#305e82",
       },
-    }}
-  >
-    Send OTP
-  </Button>
+      }}
+    >
+      Send OTP
+    </Button>
+  </div>
 )}
+
 
 
   {!locationEnabled && (
@@ -425,14 +439,7 @@ const Login = () => {
 
     </>
   )}
-
-  <HStack>
-    <Divider />
-    <Divider />
-  </HStack>
-</Stack>
-
-</div>
+ </div>
   );
   
 };
