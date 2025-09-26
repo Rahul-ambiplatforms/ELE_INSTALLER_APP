@@ -3,7 +3,7 @@ import React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom';
 import DrawerButton from './Drawer';
 import { MdAccountCircle } from 'react-icons/md';
-import logo from './images/logo/logo.png';
+import logo from './images/logo/Vmuktilogo.png';
 import logo1 from './images/logo/logo1.png';
 import ecilogo from './images/logo/eci.png';
 
@@ -75,7 +75,8 @@ const Header = () => {
                     <Stack pl={4} pr={4} justifyContent="space-between" sx={{ display: "flex", flexDirection: "row", alignItems: 'center' }}>
                         <DrawerButton display='flex' alignItems='center' drawerContent={<DrawerContent />} />
 
-                        <Heading fontSize={fontSize} display='flex' justifyContent='center' alignItems='center'><img width='8%' src={logo} />&nbsp; VMUKTI ELECTION APP</Heading>
+                        <Heading fontSize={fontSize} display='flex' justifyContent='center' alignItems='center'><img width=" 96.152px"
+height= "24.919px" src={logo} />&nbsp;</Heading>
                         {/* <Button onClick={handleSignOut} alignSelf="flex-end">Logout</Button> */}
                         <Menu>
                             <MenuButton as={IconButton} icon={<MdAccountCircle />} aria-label="Profile" variant="outline" />
