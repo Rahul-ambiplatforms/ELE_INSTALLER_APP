@@ -306,23 +306,12 @@ const Login = () => {
     </Container>
     
  {locationEnabled && !otpSent && (
-  <div
-    style={{
-     position: "fixed",
-    bottom: "0",
-    left: "0",
-    width: "100%",
-    height: "75px", // Adjust as needed
-    backgroundColor: "white", // Black background
-    zIndex: 9, // Behind the button
-    borderRadius :"16px 16px 0 0"
-    }}
-  >
+  
     <Button
       onClick={handleSendOtp}
       sx={{
          position: "fixed",
-      bottom: "3", // Adjusted so it's inside the black bar
+      bottom: "40", // Adjusted so it's inside the black bar
       left: "50%",
       transform: "translateX(-50%)",
       width: "325px",
@@ -351,7 +340,7 @@ const Login = () => {
     >
       Send OTP
     </Button>
-  </div>
+  
 )}
 
 
@@ -362,23 +351,13 @@ const Login = () => {
 
   {otpSent && locationEnabled && (
     <>
-   <div
-  style={{
-    position: "fixed",
-    bottom: "0",
-    left: "0",
-    width: "100%",
-    height: "75px", // Adjust as needed
-    backgroundColor: "white", // Black background
-    zIndex: 9, // Behind the button
-    borderRadius :"16px 16px 0 0"
-  }}
->
+   
+
   <Button
     onClick={handleSignIn}
     sx={{
       position: "fixed",
-      bottom: "3", // Adjusted so it's inside the black bar
+      bottom: "40", // Adjusted so it's inside the black bar
       left: "50%",
       transform: "translateX(-50%)",
       width: "325px",
@@ -407,7 +386,7 @@ const Login = () => {
   >
     Sign In
   </Button>
-</div>
+
 
 
       <Box
