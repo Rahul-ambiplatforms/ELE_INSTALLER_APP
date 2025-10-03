@@ -49,7 +49,7 @@ const Header = () => {
                                 </MenuList>
                             </Menu> */}
                             <Menu>
-                                <MenuButton fontSize={fontSize} as={IconButton} icon={<MdAccountCircle />} aria-label="Profile" variant="outline" />
+                                <MenuButton background="#3F77A5" fontSize={fontSize} as={IconButton} icon={<MdAccountCircle />} aria-label="Profile" variant="outline" />
                                 <MenuList>
                                     {/* Display name and mobile */}
                                     <MenuItem>
