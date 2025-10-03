@@ -227,18 +227,22 @@ const Login = () => {
           <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
              <Heading  display='flex' justifyContent='center' alignItems='center'><img width="157px"
             height= "40px" src={logo} />&nbsp;</Heading>
-            <Heading
-              fontSize="30px"
-              fontWeight="700"
-              color="#1A1A1A"
-              fontFamily="Inter"
-              textAlign="center"
-              fontStyle="normal"
-              lineHeight="normal"
-              letterSpacing="-0.4px"
-            >
-              Login to your account
-            </Heading>
+
+            { !otpSent && (
+              <Heading
+                fontSize="25px"
+                fontWeight="700"
+                color="#1A1A1A"
+                fontFamily="Inter"
+                textAlign="center"
+                fontStyle="normal"
+                lineHeight="normal"
+                letterSpacing="-0.4px"
+              >
+                Login to your account
+              </Heading>
+            )}
+
           </Stack>
         </Stack>
         
@@ -250,6 +254,8 @@ const Login = () => {
           borderRadius={{ base: "none", sm: "xl" }}
         >
           <Stack spacing="5">
+           {!otpSent && (
+             <>
             <FormControl>
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input
@@ -264,7 +270,7 @@ const Login = () => {
             </FormControl>
             <FormControl >
               <FormLabel htmlFor="mobile">Mobile Number</FormLabel>
-              <InputGroup height="44px" width="325px">
+              <InputGroup height="44px" >
                 <InputLeftAddon children="+91" />
                 <Input
                   id="mobile"
@@ -277,24 +283,80 @@ const Login = () => {
                 />
               </InputGroup>
             </FormControl>
+           </>
+            )}
+
+           
+
             {otpSent && (
               <FormControl >
-                <FormLabel htmlFor="otp">OTP</FormLabel>
-                <HStack>
-                  {otp.map((digit, index) => (
-                    <Input
-                    
-                      key={index}
-                      type="text"
-                      maxLength="1"
-                      value={digit}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(index, e)}
-                      sx={otpInputStyles}
-                      ref={(el) => (inputRefs.current[index] = el)} // Store refs for focus
-                    />
-                  ))}
-                </HStack>
+               <FormLabel
+  htmlFor="otp"
+  style={{
+    color: "#1A1A1A",
+    textAlign: "center",
+    fontFamily: "Wix Madefor Text",
+    fontSize: "20px",
+    fontStyle: "normal",
+    fontWeight: 700,
+    lineHeight: "normal",
+    letterSpacing: "-0.4px",
+    marginBottom: "12px", // bottom spacing
+  }}
+>
+  OTP verification
+</FormLabel>
+
+<p
+  style={{
+    color: "#1A1A1A",
+    textAlign: "center",
+    fontFamily: "Wix Madefor Text",
+    fontSize: "14px",
+    fontStyle: "normal",
+    fontWeight: 400,
+    lineHeight: "normal",
+     // bottom spacing
+  }}
+>
+  Enter 6 digit OTP shared on your 
+</p>
+<p 
+style={{
+    color: "#1A1A1A",
+    textAlign: "center",
+    fontFamily: "Wix Madefor Text",
+    fontSize: "14px",
+    fontStyle: "normal",
+    fontWeight: 700,
+    lineHeight: "normal",
+    marginBottom: "20px", // bottom spacing
+  }}>+91-{mobile}</p>
+
+
+               <HStack justify="center" spacing={3}>
+  {otp.map((digit, index) => (
+    <Input
+      key={index}
+      backgroundColor="white"
+      type="text"
+      maxLength={1}
+      value={digit}
+      placeholder="-" // <-- shows dash when input is empty
+      onChange={(e) => handleOtpChange(index, e.target.value)}
+      onKeyDown={(e) => handleKeyDown(index, e)}
+      sx={{
+        ...otpInputStyles,
+        textAlign: "center", // center the digit/dash
+        fontWeight: "bold",  // make it more visible
+        letterSpacing: "0.1em" // optional: spacing for better look
+      }}
+      ref={(el) => (inputRefs.current[index] = el)}
+    />
+  ))}
+</HStack>
+
+
               </FormControl>
             )}
           </Stack>
@@ -305,7 +367,7 @@ const Login = () => {
       
     </Container>
     
- {locationEnabled && !otpSent && (
+ {!otpSent && locationEnabled && (
   
     <Button
       onClick={handleSendOtp}
@@ -389,21 +451,24 @@ const Login = () => {
 
 
 
-      <Box
+     <Box
   width="100%"
   display="flex"
-  justifyContent="flex-end"
-  mb="2"
-  pr="2"
+  justifyContent="center"  // ✅ fix spelling
+  alignItems="center"       // ✅ vertical center if needed
+  textAlign="center"
+  mb={2}
+  pr={2}
   position="relative"
   top="-10px"
 >
   {resendDisabled ? (
-    <Text fontSize="sm" color="red.500">
+    <Text textAlign="center" fontSize="sm" color="red.500">
       Resend OTP ({resendTimer})
     </Text>
   ) : (
     <Text
+      textAlign="center"
       fontSize="sm"
       color="blue.500"
       cursor="pointer"
@@ -415,6 +480,7 @@ const Login = () => {
     </Text>
   )}
 </Box>
+
 
     </>
   )}
