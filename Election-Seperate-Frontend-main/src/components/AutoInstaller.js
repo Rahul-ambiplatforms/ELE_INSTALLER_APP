@@ -858,7 +858,7 @@ const AutoInstaller = () => {
                   </Button>
                 </Box>
               </Flex>
-
+             
               <h3
                 style={{
                   display: "flex",
@@ -869,6 +869,11 @@ const AutoInstaller = () => {
                   // marginBottom: "10px",
                 }}
               >
+                 <Box style={{ textAlign: "left", width: "55%" }}> {/* Added Box with styling */}
+          <Text fontWeight="700" fontFamily="Inter" fontSize="20px" lineHeight="normal" >
+            Devices Added - ({cameraa.length})
+          </Text>
+        </Box>
                 {!showAdditionalInputs && cameraa.length > 0 && (
                   <Button
                     bg="#F4F4F5"
