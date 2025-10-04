@@ -228,20 +228,43 @@ const Login = () => {
              <Heading  display='flex' justifyContent='center' alignItems='center'><img width="157px"
             height= "40px" src={logo} />&nbsp;</Heading>
 
-            { !otpSent && (
-              <Heading
-                fontSize="25px"
-                fontWeight="700"
-                color="#1A1A1A"
-                fontFamily="Inter"
-                textAlign="center"
-                fontStyle="normal"
-                lineHeight="normal"
-                letterSpacing="-0.4px"
-              >
-                Login to your account
-              </Heading>
-            )}
+         {!otpSent && (
+  <>
+    <Heading
+      as="h2"
+      style={{
+        color: "#1A1A1A !important",
+        textAlign: "center !important",
+        fontFamily: "Inter !important",
+        fontSize: "20px",
+        fontStyle: "normal !important",
+        fontWeight: "700",
+        lineHeight: "normal",
+        letterSpacing: "-0.4px !important",
+        marginTop:"15px"
+      }}
+    >
+      Login into your account
+    </Heading>
+
+    <Text
+      style={{
+        width: "252px !important",
+        color: "#1A1A1A !important",
+        textAlign: "center !important",
+        fontFamily: "'Wix Madefor Text' !important",
+        fontSize: "14px",
+        fontStyle: "normal !important",
+        fontWeight: "400 !important",
+        lineHeight: "normal !important",
+      }}
+    >
+      Please enter your details
+    </Text>
+  </>
+)}
+
+
 
           </Stack>
         </Stack>
@@ -261,7 +284,7 @@ const Login = () => {
               <Input
                 id="name"
                 type="text"
-                placeholder="Enter your name"
+                placeholder="Enter your full name"
                 bg="white"
                 value={name}
                 onChange={handleNameChange}
@@ -295,10 +318,10 @@ const Login = () => {
   style={{
     color: "#1A1A1A",
     textAlign: "center",
-    fontFamily: "Wix Madefor Text",
+    fontFamily: "Wix Madefor Text !important",
     fontSize: "20px",
-    fontStyle: "normal",
-    fontWeight: 700,
+    fontStyle: "normal !important",
+    fontWeight: "700",
     lineHeight: "normal",
     letterSpacing: "-0.4px",
     marginBottom: "12px", // bottom spacing
@@ -311,10 +334,10 @@ const Login = () => {
   style={{
     color: "#1A1A1A",
     textAlign: "center",
-    fontFamily: "Wix Madefor Text",
+    fontFamily: "Wix Madefor Text !important",
     fontSize: "14px",
     fontStyle: "normal",
-    fontWeight: 400,
+    fontWeight: "400",
     lineHeight: "normal",
      // bottom spacing
   }}
@@ -325,10 +348,10 @@ const Login = () => {
 style={{
     color: "#1A1A1A",
     textAlign: "center",
-    fontFamily: "Wix Madefor Text",
+    fontFamily: "Wix Madefor Text !important",
     fontSize: "14px",
     fontStyle: "normal",
-    fontWeight: 700,
+    fontWeight: "700",
     lineHeight: "normal",
     marginBottom: "20px", // bottom spacing
   }}>+91-{mobile}</p>
