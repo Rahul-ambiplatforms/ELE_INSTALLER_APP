@@ -210,10 +210,10 @@ const AutoInstaller = () => {
     setHasClickedCameraDidInfo(true); // Button was clicked
     clearInterval(cameraStatusInterval.current);
     clearInterval(toastInterval.current);
-    
+
     // Start fetching camera details
     setIsFetchingCameraDetails(true);
-    
+
     const response = await getCameraByDid(deviceId);
     if (!response?.flvUrl?.url2) {
       toast.error(
@@ -858,7 +858,7 @@ const AutoInstaller = () => {
                   </Button>
                 </Box>
               </Flex>
-             
+
               <h3
                 style={{
                   display: "flex",
@@ -869,11 +869,21 @@ const AutoInstaller = () => {
                   // marginBottom: "10px",
                 }}
               >
-                 <Box style={{ textAlign: "left", width: "55%" }}> {/* Added Box with styling */}
-          <Text fontWeight="700" fontFamily="Inter" fontSize="20px" lineHeight="normal" >
-            Devices Added - ({cameraa.length})
-          </Text>
-        </Box>
+                <Box style={{ textAlign: "left", width: "55%" }}>
+                  {" "}
+                  {/* Added Box with styling */}
+                  <Text
+  style={{
+    fontWeight: "700",
+    fontFamily: "Inter !important",
+    fontSize: "20px",
+    lineHeight: "normal",
+  }}
+>
+  Devices Added - ({cameraa.length})
+</Text>
+
+                </Box>
                 {!showAdditionalInputs && cameraa.length > 0 && (
                   <Button
                     bg="#F4F4F5"
@@ -953,144 +963,149 @@ const AutoInstaller = () => {
                 </Button>
               </div>
               {/* Camera List Table */}
-              {filteredCameras.slice(startIndex, endIndex).map((camera,index) => (
-                <Box
-                  key={camera.deviceId}
-                 sx={{
-      borderTop: index === 0 ? "2px solid #3F77A5" : "none", // top border only for first
-      borderBottom:
-        index !== filteredCameras.slice(startIndex, endIndex).length - 1
-          ? "2px solid #3F77A5"
-          : "none", // bottom border for all except last
-      pb: 2,
-    }}
-                  mb={4}
-                  p={4}
-                >
-                  <Flex justify="space-between" align="center" mb={3}>
-                    <Box>
-                      <Text fontWeight="bold" fontFamily="Wix Madefor Text">
-                        Device ID: {camera.deviceId}
-                      </Text>
-                    </Box>
-
-                    <Box>
-                      <Text>{camera.status === "RUNNING" ? "🟢" : "🔴"}</Text>
-                    </Box>
-                    <Box
-                      width="0"
-                      height="18px"
-                      flexShrink={0}
-                      borderLeft="1px solid #1A1A1A"
-                    />
-                    <IconButton
-                      aria-label="Expand/Collapse Details"
-                      icon={
-                        <Image
-                          src={expand}
-                          onClick={() => handleToggleExpand(camera.deviceId)}
-                          alt="Expand"
-                          sx={{
-                            transform:
-                              expandedCameraId === camera.id
-                                ? "rotate(180deg)"
-                                : "rotate(0deg)",
-                            transition: "transform 0.3s ease",
-                          }}
-                        />
-                      }
-                    />
-                  </Flex>
-
-                  {expandedCameraId === camera.deviceId && (
-                    <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={2}>
+              {filteredCameras
+                .slice(startIndex, endIndex)
+                .map((camera, index) => (
+                  <Box
+                    key={camera.deviceId}
+                    sx={{
+                      borderTop: index === 0 ? "2px solid #3F77A5" : "none", // top border only for first
+                      borderBottom:
+                        index !==
+                        filteredCameras.slice(startIndex, endIndex).length - 1
+                          ? "2px solid #3F77A5"
+                          : "none", // bottom border for all except last
+                      pb: 2,
+                    }}
+                    mb={4}
+                    p={4}
+                  >
+                    <Flex justify="space-between" align="center" mb={3}>
                       <Box>
-                        <Text fontFamily="Wix Madefor Text" fontWeight="bold">
-                          District
-                        </Text>
-                        <Text fontFamily="Wix Madefor Text">
-                          {camera.district}
+                        <Text fontWeight="bold" fontFamily="Wix Madefor Text">
+                          Device ID: {camera.deviceId}
                         </Text>
                       </Box>
 
                       <Box>
-                        <Text fontFamily="Wix Madefor Text" fontWeight="bold">
-                          Assembly Name
-                        </Text>
-                        <Text fontFamily="Wix Madefor Text">
-                          {camera.assemblyName}
-                        </Text>
+                        <Text>{camera.status === "RUNNING" ? "🟢" : "🔴"}</Text>
                       </Box>
+                      <Box
+                        width="0"
+                        height="18px"
+                        flexShrink={0}
+                        borderLeft="1px solid #1A1A1A"
+                      />
+                      <IconButton
+                        aria-label="Expand/Collapse Details"
+                        icon={
+                          <Image
+                            src={expand}
+                            onClick={() => handleToggleExpand(camera.deviceId)}
+                            alt="Expand"
+                            sx={{
+                              transform:
+                                expandedCameraId === camera.id
+                                  ? "rotate(180deg)"
+                                  : "rotate(0deg)",
+                              transition: "transform 0.3s ease",
+                            }}
+                          />
+                        }
+                      />
+                    </Flex>
 
-                      <Box>
-                        <Text fontFamily="Wix Madefor Text" fontWeight="bold">
-                          PS No.
-                        </Text>
-                        <Text fontFamily="Wix Madefor Text">{camera.psNo}</Text>
-                      </Box>
+                    {expandedCameraId === camera.deviceId && (
+                      <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={2}>
+                        <Box>
+                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                            District
+                          </Text>
+                          <Text fontFamily="Wix Madefor Text">
+                            {camera.district}
+                          </Text>
+                        </Box>
 
-                      <Box>
-                        <Text fontFamily="Wix Madefor Text" fontWeight="bold">
-                          Location
-                        </Text>
-                        <Text fontFamily="Wix Madefor Text">
-                          {camera.location}
-                        </Text>
-                      </Box>
+                        <Box>
+                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                            Assembly Name
+                          </Text>
+                          <Text fontFamily="Wix Madefor Text">
+                            {camera.assemblyName}
+                          </Text>
+                        </Box>
 
-                      <Box>
-                        <Text fontFamily="Wix Madefor Text" fontWeight="bold">
-                          Last Live
-                        </Text>
-                        <Text fontFamily="Wix Madefor Text">
-                          {camera.lastSeen}
-                        </Text>
-                      </Box>
-                      <Box>
-                        <Text
-                          fontFamily="Wix Madefor Text"
-                          fontWeight="bold"
-                        ></Text>
-                        <Text fontFamily="Wix Madefor Text">
-                          {camera.lastSeen}
-                        </Text>
-                      </Box>
+                        <Box>
+                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                            PS No.
+                          </Text>
+                          <Text fontFamily="Wix Madefor Text">
+                            {camera.psNo}
+                          </Text>
+                        </Box>
 
-                      <Box>
-                        <Text fontFamily="Wix Madefor Text" fontWeight="bold">
-                          Video Feed
-                        </Text>
-                        <IconButton
-                          onClick={() => handleViewCamera(camera)}
-                          colorScheme="blue"
-                          size="sm"
-                          aria-label="View"
-                          icon={<MdVisibility />}
-                        />
-                      </Box>
-                      <Box justifyContent="right" textAlign="right">
-                        {editableCameraID === camera.id ? (
-                          <Button
-                            onClick={() => handleUpdateClick(camera.deviceId)}
-                            colorScheme="green"
+                        <Box>
+                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                            Location
+                          </Text>
+                          <Text fontFamily="Wix Madefor Text">
+                            {camera.location}
+                          </Text>
+                        </Box>
+
+                        <Box>
+                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                            Last Live
+                          </Text>
+                          <Text fontFamily="Wix Madefor Text">
+                            {camera.lastSeen}
+                          </Text>
+                        </Box>
+                        <Box>
+                          <Text
+                            fontFamily="Wix Madefor Text"
+                            fontWeight="bold"
+                          ></Text>
+                          <Text fontFamily="Wix Madefor Text">
+                            {camera.lastSeen}
+                          </Text>
+                        </Box>
+
+                        <Box>
+                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                            Video Feed
+                          </Text>
+                          <IconButton
+                            onClick={() => handleViewCamera(camera)}
+                            colorScheme="blue"
                             size="sm"
-                          >
-                            Update
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={() => handleDeleteClick(camera.deviceId)}
-                            colorScheme="red"
-                            size="sm"
-                          >
-                            <MdDelete />
-                          </Button>
-                        )}
-                      </Box>
-                    </Grid>
-                  )}
-                </Box>
-              ))}
+                            aria-label="View"
+                            icon={<MdVisibility />}
+                          />
+                        </Box>
+                        <Box justifyContent="right" textAlign="right">
+                          {editableCameraID === camera.id ? (
+                            <Button
+                              onClick={() => handleUpdateClick(camera.deviceId)}
+                              colorScheme="green"
+                              size="sm"
+                            >
+                              Update
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => handleDeleteClick(camera.deviceId)}
+                              colorScheme="red"
+                              size="sm"
+                            >
+                              <MdDelete />
+                            </Button>
+                          )}
+                        </Box>
+                      </Grid>
+                    )}
+                  </Box>
+                ))}
 
               <h2
                 style={{
@@ -1299,21 +1314,30 @@ const AutoInstaller = () => {
                         height="54px"
                         flex-shrink="0"
                       >
-                        <Text marginRight="0.5rem" fontFamily="Wix Madefor Text">
+                        <Text
+                          marginRight="0.5rem"
+                          fontFamily="Wix Madefor Text"
+                        >
                           Resolution:
                         </Text>
                         <Text marginRight="1rem" fontFamily="Wix Madefor Text">
                           {cameraStatus.resolution}
                         </Text>
 
-                        <Text marginRight="0.5rem" fontFamily="Wix Madefor Text">
+                        <Text
+                          marginRight="0.5rem"
+                          fontFamily="Wix Madefor Text"
+                        >
                           Camera Angle:
                         </Text>
                         <Text marginRight="1rem" fontFamily="Wix Madefor Text">
                           {Math.abs(cameraStatus.camera_angle)}
                         </Text>
 
-                        <Text marginRight="0.5rem" fontFamily="Wix Madefor Text">
+                        <Text
+                          marginRight="0.5rem"
+                          fontFamily="Wix Madefor Text"
+                        >
                           FPS:
                         </Text>
                         <Text marginRight="1rem" fontFamily="Wix Madefor Text">
@@ -1335,7 +1359,9 @@ const AutoInstaller = () => {
                             checked: !blurChecked,
                           },
                           {
-                            label: blackviewChecked ? "Black View" : "No Black View",
+                            label: blackviewChecked
+                              ? "Black View"
+                              : "No Black View",
                             checked: !blackviewChecked,
                           },
                           { label: "Brightness", checked: brightnessChecked },
@@ -1441,7 +1467,7 @@ const AutoInstaller = () => {
                       }}
                     />
                   </h1>
-                  
+
                   {/* Location Details Form - Only show after Camera DID Info is clicked */}
                   <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
                     <Text
