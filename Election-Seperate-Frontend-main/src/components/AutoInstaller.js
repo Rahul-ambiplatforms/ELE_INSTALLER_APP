@@ -873,16 +873,15 @@ const AutoInstaller = () => {
                   {" "}
                   {/* Added Box with styling */}
                   <Text
-  style={{
-    fontWeight: "700",
-    fontFamily: "Inter !important",
-    fontSize: "20px",
-    lineHeight: "normal",
-  }}
->
-  Devices Added - ({cameraa.length})
-</Text>
-
+                    style={{
+                      fontWeight: "700",
+                      fontFamily: "Inter !important",
+                      fontSize: "20px",
+                      lineHeight: "normal",
+                    }}
+                  >
+                    Devices Added - ({cameraa.length})
+                  </Text>
                 </Box>
                 {!showAdditionalInputs && cameraa.length > 0 && (
                   <Button
@@ -982,7 +981,16 @@ const AutoInstaller = () => {
                   >
                     <Flex justify="space-between" align="center" mb={3}>
                       <Box>
-                        <Text fontWeight="bold" fontFamily="Wix Madefor Text">
+                        <Text
+                          style={{
+                            fontWeight: "bold",
+                            fontFamily: "Wix Madefor Text !important",
+                            fontSize: "15px",
+                            lineHeight: "24px",
+                            fontStyle: "normal",
+                            color: "#1A1A1A",
+                          }}
+                        >
                           Device ID: {camera.deviceId}
                         </Text>
                       </Box>
@@ -1018,61 +1026,175 @@ const AutoInstaller = () => {
                     {expandedCameraId === camera.deviceId && (
                       <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={2}>
                         <Box>
-                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                          <Text
+                            style={{
+                              fontWeight: "bold",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             District
                           </Text>
-                          <Text fontFamily="Wix Madefor Text">
+                          <Text
+                            style={{
+                              fontWeight: "400",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             {camera.district}
                           </Text>
                         </Box>
 
                         <Box>
-                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                          <Text
+                            style={{
+                              fontWeight: "bold",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             Assembly Name
                           </Text>
-                          <Text fontFamily="Wix Madefor Text">
+                          <Text
+                            style={{
+                              fontWeight: "400",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             {camera.assemblyName}
                           </Text>
                         </Box>
 
                         <Box>
-                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                          <Text
+                            style={{
+                              fontWeight: "bold",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             PS No.
                           </Text>
-                          <Text fontFamily="Wix Madefor Text">
+                          <Text
+                            style={{
+                              fontWeight: "400",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             {camera.psNo}
                           </Text>
                         </Box>
 
                         <Box>
-                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                          <Text
+                            style={{
+                              fontWeight: "bold",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             Location
                           </Text>
-                          <Text fontFamily="Wix Madefor Text">
+                          <Text
+                            style={{
+                              fontWeight: "400",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             {camera.location}
                           </Text>
                         </Box>
 
                         <Box>
-                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                          <Text
+                            style={{
+                              fontWeight: "bold",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             Last Live
                           </Text>
-                          <Text fontFamily="Wix Madefor Text">
+                          <Text
+                            style={{
+                              fontWeight: "400",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             {camera.lastSeen}
                           </Text>
                         </Box>
                         <Box>
                           <Text
-                            fontFamily="Wix Madefor Text"
-                            fontWeight="bold"
+                            style={{
+                              fontWeight: "bold",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
                           ></Text>
-                          <Text fontFamily="Wix Madefor Text">
+                          <Text
+                            style={{
+                              fontWeight: "400",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             {camera.lastSeen}
                           </Text>
                         </Box>
 
                         <Box>
-                          <Text fontFamily="Wix Madefor Text" fontWeight="bold">
+                          <Text
+                            style={{
+                              fontWeight: "bold",
+                              fontFamily: "Wix Madefor Text !important",
+                              fontSize: "14px",
+                              lineHeight: "24px",
+                              fontStyle: "normal",
+                              color: "#1A1A1A",
+                            }}
+                          >
                             Video Feed
                           </Text>
                           <IconButton
