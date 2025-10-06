@@ -4,6 +4,7 @@ import logo from "./images/logo/cam.png";
 import * as FileSaver from "file-saver";
 import { FaFileExcel } from "react-icons/fa";
 import * as XLSX from "xlsx";
+import { Filesystem, Directory } from '@capacitor/filesystem';
 // import "./auto-installer.css";
 import {
   Button,
@@ -290,30 +291,44 @@ const AutoInstaller = () => {
 
     startCameraStatusPolling(deviceId);
   };
+const downloadReport = async () => {
+  const exportData = cameraa.map((camera) => ({
+    "Device ID": camera.deviceId,
+    District: camera.district,
+    "Assembly Name": camera.assemblyName,
+    "PS No.": camera.psNo,
+    Location: camera.location,
+    "Last Seen": camera.lastSeen,
+    Status: camera.status,
+  }));
 
-  const downloadReport = () => {
-    const fileType =
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-    const fileExtension = ".xlsx";
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Camera Report");
 
-    const exportData = cameraa.map((camera) => ({
-      // Use the 'cameraa' state here
-      "Device ID": camera.deviceId,
-      District: camera.district,
-      "Assembly Name": camera.assemblyName,
-      "PS No.": camera.psNo,
-      Location: camera.location,
-      "Last Seen": camera.lastSeen,
-      Status: camera.status,
-    }));
+  // Detect if running inside Capacitor native app
+  const isNative = window.Capacitor?.isNativePlatform?.();
 
-    const ws = XLSX.utils.json_to_sheet(exportData);
-    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const data = new Blob([excelBuffer], { type: fileType });
-    FileSaver.saveAs(data, "camera_report" + fileExtension);
-  };
-
+  if (isNative) {
+    // ✅ Native mobile: Save file in app's Documents directory
+    const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+    try {
+      const result = await Filesystem.writeFile({
+        path: 'camera_report.xlsx',
+        data: wbout,
+        directory: Directory.Documents,
+      });
+      console.log('✅ Excel report saved to:', result.uri);
+      alert('Camera report saved successfully on your device!');
+    } catch (error) {
+      console.error('❌ Error saving Excel file:', error);
+      alert('Failed to save report.');
+    }
+  } else {
+    // 🌐 Web browser: trigger normal file download
+    XLSX.writeFile(wb, 'camera_report.xlsx');
+  }
+};
   const startCameraStatusPolling = (deviceId) => {
     setCameraStatus(undefined); // Set to undefined when polling starts
     fetchCameraStatus(deviceId);
@@ -349,69 +364,69 @@ const AutoInstaller = () => {
         setCameraAngleAcceptable(cameraAngle <= 15);
         setIsFetchingCameraDetails(false);
 
-        if (cameraAngle > 15) {
-          if (!toastInterval.current) {
-            toastInterval.current = setInterval(() => {
-              toast.warn(
-                "Try to adjust the angle of camera. The angle of camera should be in range of 0-15 degree",
-                {
-                  position: "top-right",
-                  autoClose: 5000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  style: toastStyle, // Apply inline styles here
-                }
-              );
-            }, 9000);
-          }
-        } else {
-          clearInterval(toastInterval.current);
-          toastInterval.current = null;
-        }
-      }
+  //       if (cameraAngle > 15) {
+  //         if (!toastInterval.current) {
+  //           toastInterval.current = setInterval(() => {
+  //             toast.warn(
+  //               "Try to adjust the angle of camera. The angle of camera should be in range of 0-15 degree",
+  //               {
+  //                 position: "top-right",
+  //                 autoClose: 5000,
+  //                 hideProgressBar: false,
+  //                 closeOnClick: true,
+  //                 pauseOnHover: true,
+  //                 draggable: true,
+  //                 style: toastStyle, // Apply inline styles here
+  //               }
+  //             );
+  //           }, 9000);
+  //         }
+  //       } else {
+  //         clearInterval(toastInterval.current);
+  //         toastInterval.current = null;
+  //       }
+  //     }
 
-      if (status.blur) {
-        toast.warn("Camera is blur, try to fix it!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      }
-      if (status.blackview) {
-        toast.warn("Camera having black view, try to fix it!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      }
-      if (!status.brightness) {
-        toast.warn("Check the brightness of the camera!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      }
-      if (status.BlackAndWhite) {
-        toast.warn("Camera is black and white!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      }
+  //     if (status.blur) {
+  //       toast.warn("Camera is blur, try to fix it!", {
+  //         position: "top-right",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //       });
+  //     }
+  //     if (status.blackview) {
+  //       toast.warn("Camera having black view, try to fix it!", {
+  //         position: "top-right",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //       });
+  //     }
+  //     if (!status.brightness) {
+  //       toast.warn("Check the brightness of the camera!", {
+  //         position: "top-right",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //       });
+  //     }
+  //     if (status.BlackAndWhite) {
+  //       toast.warn("Camera is black and white!", {
+  //         position: "top-right",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //       });
+   }
     } catch (error) {
       console.error("Error fetching camera status:", error);
       setIsFetchingCameraDetails(false);
@@ -791,6 +806,7 @@ const AutoInstaller = () => {
       backgroundColor="#F4F4F5"
       maxW="100vw"
       p={4}
+
       style={{ margin: "0px", backgroundColor: "#F4F4F5" }}
     >
       <style>{customCSS}</style>
@@ -1715,6 +1731,7 @@ onClick={refresh}
                       border-radius="8px"
                       color="white"
                       onClick={handleSubmit}
+                       marginBottom="50px"
                     >
                       Submit
                     </Button>
