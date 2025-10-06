@@ -946,16 +946,23 @@ const AutoInstaller = () => {
                   }}
                 />
                 <Button
-                  marginTop="10px"
-                  bg="#F4F4F5"
-                  onClick={refresh}
-                  height="35px"
-                  fontFamily="Wix Madefor Text"
-                  fontSize="15px"
-                  fontStyle="normal"
-                  fontWeight="400"
-                  textDecoration="underline"
-                  textUnderlineOffset="2px"
+onClick={refresh}
+  sx={{
+    marginTop: "10px",
+    background: "#F4F4F5",
+    height: "35px",
+    fontFamily: "'Wix Madefor Text', sans-serif",
+    fontSize: "15px",
+    fontStyle: "normal",
+    fontWeight: "400",
+    textDecoration: "underline",
+    textUnderlineOffset: "2px",
+    color: "black",
+    _hover: {
+      background: "#E4E4E5",
+      textDecoration: "underline",
+    },
+  }}
                 >
                   <IoIosRefresh color="#3F77A5" />
                   &nbsp;Refresh
