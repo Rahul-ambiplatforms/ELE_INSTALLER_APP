@@ -68,7 +68,7 @@ function QRCodeScanner({ onScanSuccess }) {
 
   return (
     <div>
-      <div id="reader"></div>
+      <div id="reader" display="none"></div>
     </div>
   );
 }
