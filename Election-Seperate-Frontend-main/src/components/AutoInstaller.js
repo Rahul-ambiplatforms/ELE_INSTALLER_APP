@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import logo from "./images/logo/cam.png";
+import { FiList } from "react-icons/fi";
 import * as FileSaver from "file-saver";
 import { FaFileExcel } from "react-icons/fa";
 import * as XLSX from "xlsx";
@@ -31,6 +32,7 @@ import {
   Th,
   Thead,
   Tr,
+  Tooltip,
   Checkbox,
   border, // Import Checkbox from Chakra UI
   Box,
@@ -158,7 +160,16 @@ const AutoInstaller = () => {
       clearInterval(cameraStatusInterval.current);
     };
   }, [deviceId]);
-
+   const handleBackClick = () => {
+    setShowAdditionalInputs(false);
+    // Optionally clear any form fields or camera data here if needed
+    setDeviceId(""); // Reset DeviceID
+    setFlvUrl(""); // Reset video URL
+    setCameraStatus(null); // Reset camera status
+    setHasClickedCameraDidInfo(false); // Reset this state when adding new device
+    clearInterval(cameraStatusInterval.current);
+    clearInterval(toastInterval.current);
+  };
   const handleGetData = async (deviceId, setting) => {
     const response = await getCameraByDid(deviceId);
     const getset = await getSetting(deviceId, response.flvUrl.prourl);
@@ -319,7 +330,7 @@ const downloadReport = async () => {
         directory: Directory.Documents,
       });
       console.log('✅ Excel report saved to:', result.uri);
-      alert('Camera report saved successfully on your device!');
+      alert('Camera report saved successfully on your device >> Go to files >> Documents');
     } catch (error) {
       console.error('❌ Error saving Excel file:', error);
       alert('Failed to save report.');
@@ -1328,6 +1339,36 @@ onClick={refresh}
                   >
                     OR
                   </div>
+
+                <Box display="flex" justifyContent="flex-end" alignItems="center" ml="4px">
+      <Tooltip
+        label="List View"
+        placement="right"
+        hasArrow
+        bg="#1A1A1A"
+        color="white"
+        fontFamily="Wix Madefor Text, sans-serif !important"
+        fontSize="14px"
+        borderRadius="6px"
+        p="6px 10px"
+        openDelay={100}
+      >
+        <IconButton
+          icon={<FiList size={18} />}
+          aria-label="List View"
+          onClick={handleBackClick}
+          bg="#F4F4F5"
+          border="1px solid #DADADA"
+          boxShadow="0px 1px 4px rgba(0,0,0,0.1)"
+          borderRadius="8px"
+          height="36px"
+          width="4px"
+          color="#1A1A1A"
+          transition="all 0.25s ease"
+         
+        />
+      </Tooltip>
+    </Box>
                 </>
               )}
 
@@ -1337,6 +1378,7 @@ onClick={refresh}
                   flexWrap: "nowrap",
                   alignItems: "center",
                   justifyContent: "center",
+                  gap:"10px"
                 }}
               >
                 {/* <Text style={{ width: "120px" }}>DeviceID</Text> */}
@@ -1380,6 +1422,7 @@ onClick={refresh}
                 >
                   Camera DID Info
                 </Button>
+
               </div>
             </>
           )}
