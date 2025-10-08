@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import logo from "./images/logo/cam.png";
+import Delete from "./images/logo/deleteicon.png";
 import { FiList } from "react-icons/fi";
 import * as FileSaver from "file-saver";
 import { FaFileExcel } from "react-icons/fa";
@@ -1250,11 +1251,18 @@ onClick={refresh}
                             </Button>
                           ) : (
                             <Button
+                            
                               onClick={() => handleDeleteClick(camera.deviceId)}
                               colorScheme="red"
                               size="sm"
                             >
-                              <MdDelete />
+                               <img
+    src={Delete}
+    alt="Camera Icon"
+    width="20px"
+    height="20px"
+    style={{ objectFit: "contain" }}
+  />
                             </Button>
                           )}
                         </Box>
@@ -1433,6 +1441,7 @@ onClick={refresh}
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                 marginBottom:"50px"
               }}
             >
               <Button
@@ -1445,6 +1454,7 @@ onClick={refresh}
                 height="40px"
                 color="white"
                 marginTop="15px"
+               
                 onClick={handleAddNewDeviceClick}
               >
                 Add New device
