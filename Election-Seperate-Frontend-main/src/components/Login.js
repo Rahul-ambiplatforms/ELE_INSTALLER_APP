@@ -371,10 +371,30 @@ style={{
       sx={{
         ...otpInputStyles,
         textAlign: "center", // center the digit/dash
-        fontWeight: "bold",  // make it more visible
+        fontWeight: "normal",  // make it more visible
         letterSpacing: "0.1em" // optional: spacing for better look
       }}
       ref={(el) => (inputRefs.current[index] = el)}
+       style={{
+        ...otpInputStyles,
+        width: "48px",              // wider for better visibility
+        height: "48px",             // enough height to center text
+        textAlign: "center",        // center digit/dash
+        fontSize: "24px",           // large and readable
+        fontWeight: "500",
+        borderRadius: "10px",
+        border: "1px solid #ccc",
+        color: "#1A1A1A",
+        _placeholder: {
+          color: "#A0A0A0",
+          fontSize: "22px",
+          fontWeight: "400",
+        },
+        _focus: {
+          borderColor: "#3182CE",
+          boxShadow: "0 0 0 1px #3182CE",
+        },
+      }}
     />
   ))}
 </HStack>
