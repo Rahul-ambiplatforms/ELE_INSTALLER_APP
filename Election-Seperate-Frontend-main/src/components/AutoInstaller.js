@@ -1670,152 +1670,153 @@ onClick={refresh}
               {/* DIV 2: Camera Location Details - Only show after Camera DID Info is clicked */}
              {hasClickedCameraDidInfo && (
   <Box>
-    <h1
-      style={{
-        fontFamily: "Wix Madefor Text",
-        fontSize: "14px",
-        fontStyle: "normal",
-        fontWeight: 500,
-        lineHeight: "20px",
-        display: "flex",
-        alignItems: "center",
-      }}
-    >
-      &nbsp;&nbsp;Camera Feed Status
-      <img
-        src={line}
-        alt="Line"
-        style={{
-          width: "200px",
-          height: "1px",
-          marginLeft: "10px",
-          verticalAlign: "middle",
-        }}
-      />
-    </h1>
+   <h1
+  style={{
+    fontSize: "14px",
+    fontFamily: '"Wix Madefor Text", sans-serif',
+    fontWeight: 500,
+    fontStyle: "normal",
+    lineHeight: "20px",
+    display: "flex",
+    alignItems: "center",
+  }}
+>
+  &nbsp;&nbsp;Camera Feed Status
+  <img
+    src={line}
+    alt="Line"
+    style={{
+      width: "200px",
+      height: "1px",
+      marginLeft: "10px",
+      verticalAlign: "middle",
+    }}
+  />
+</h1>
 
-    {/* Location Details Form - Show inputs based on isEditing */}
-    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-      <Text
-        style={{
-          width: "320px",
-          fontWeight: 500,
-          fontFamily: "Wix Madefor Text",
-        }}
-      >
-        &nbsp; State
-      </Text>
-      {isEditing ? (
-        <Input
-          background="#FFF"
-          fontWeight="500"
-          fontFamily="Wix Madefor Text"
-          fontSize="12px"
-          value={state}
-          onChange={(e) => setState(e.target.value.toUpperCase())}
-          placeholder="State"
-          isReadOnly={true}
-        />
-      ) : (
-        <Text>&nbsp; {state}</Text>
-      )}
-    </div>
-    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-      <Text
-        style={{
-          width: "320px",
-          fontWeight: 500,
-          fontFamily: "Wix Madefor Text",
-        }}
-      >
-        &nbsp; District
-      </Text>
-      {isEditing ? (
-        <Input
-          background="#FFF"
-          fontWeight="500"
-          fontFamily="Wix Madefor Text"
-          fontSize="12px"
-          value={district}
-          onChange={(e) => setDistrict(e.target.value)}
-          placeholder="District"
-        />
-      ) : (
-        <Text>&nbsp; {district}</Text>
-      )}
-    </div>
-    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-      <Text
-        style={{
-          width: "320px",
-          fontWeight: 500,
-          fontFamily: "Wix Madefor Text",
-        }}
-      >
-        &nbsp; Assembly
-      </Text>
-      {isEditing ? (
-        <Input
-          background="#FFF"
-          fontWeight="500"
-          fontFamily="Wix Madefor Text"
-          fontSize="12px"
-          value={assemblyName}
-          onChange={(e) => setAssemblyName(e.target.value)}
-          placeholder="Assembly Name"
-        />
-      ) : (
-        <Text>&nbsp; {assemblyName}</Text>
-      )}
-    </div>
-    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-      <Text
-        style={{
-          width: "320px",
-          fontWeight: 500,
-          fontFamily: "Wix Madefor Text",
-        }}
-      >
-        &nbsp; PsNo.
-      </Text>
-      {isEditing ? (
-        <Input
-          background="#FFF"
-          fontWeight="500"
-          fontFamily="Wix Madefor Text"
-          fontSize="12px"
-          value={psNumber}
-          onChange={(e) => setPsNumber(e.target.value)}
-          placeholder="PS Number"
-        />
-      ) : (
-        <Text>&nbsp; {psNumber}</Text>
-      )}
-    </div>
-    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-      <Text
-        style={{
-          width: "320px",
-          fontWeight: 500,
-          fontFamily: "Wix Madefor Text",
-        }}
-      >
-        &nbsp; Location
-      </Text>
-      {isEditing ? (
-        <Input
-          background="#FFF"
-          fontWeight="500"
-          fontFamily="Wix Madefor Text"
-          fontSize="12px"
-          value={excelLocation}
-          onChange={(e) => setExcelLocation(e.target.value)}
-          placeholder="Location"
-        />
-      ) : (
-        <Text>&nbsp; {excelLocation}</Text>
-      )}
-    </div>
+    {/* Location Details Form */}
+<Box padding="10px">
+  {/* State */}
+  <Box marginBottom="0.75rem">
+    <Text
+      width="100%"
+      fontWeight="600"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="14px"
+      color="#1A1A1A"
+      marginBottom="4px"
+    >
+      &nbsp; State
+    </Text>
+    <Input
+      background="#FFF"
+      fontWeight="500"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="12px"
+      value={state}
+      onChange={(e) => setState(e.target.value.toUpperCase())}
+      placeholder="State"
+      isReadOnly={true}
+    />
+  </Box>
+
+  {/* District */}
+  <Box marginBottom="0.75rem">
+    <Text
+     width="100%"
+      fontWeight="600"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="14px"
+      color="#1A1A1A"
+      marginBottom="4px"
+    >
+      &nbsp; District
+    </Text>
+    <Input
+      background="#FFF"
+      fontWeight="500"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="12px"
+      value={district}
+      onChange={(e) => setDistrict(e.target.value)}
+      placeholder="District"
+      isReadOnly={!isEditing}
+    />
+  </Box>
+
+  {/* Assembly */}
+  <Box marginBottom="0.75rem">
+    <Text
+      width="100%"
+      fontWeight="600"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="14px"
+      color="#1A1A1A"
+      marginBottom="4px"
+    >
+      &nbsp; Assembly
+    </Text>
+    <Input
+      background="#FFF"
+      fontWeight="500"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="12px"
+      value={assemblyName}
+      onChange={(e) => setAssemblyName(e.target.value)}
+      placeholder="Assembly Name"
+      isReadOnly={!isEditing}
+    />
+  </Box>
+
+  {/* PsNo */}
+  <Box marginBottom="0.75rem">
+    <Text
+      width="100%"
+      fontWeight="600"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="14px"
+      color="#1A1A1A"
+      marginBottom="4px"
+    >
+      &nbsp; PsNo.
+    </Text>
+    <Input
+      background="#FFF"
+      fontWeight="500"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="12px"
+      value={psNumber}
+      onChange={(e) => setPsNumber(e.target.value)}
+      placeholder="PS Number"
+      isReadOnly={!isEditing}
+    />
+  </Box>
+
+  {/* Location */}
+  <Box marginBottom="0.75rem">
+    <Text
+     width="100%"
+      fontWeight="600"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="14px"
+      color="#1A1A1A"
+      marginBottom="4px"
+    >
+      &nbsp; Location
+    </Text>
+    <Input
+      background="#FFF"
+      fontWeight="500"
+      fontFamily="'Wix Madefor Text', sans-serif"
+      fontSize="12px"
+      value={excelLocation}
+      onChange={(e) => setExcelLocation(e.target.value)}
+      placeholder="Location"
+      isReadOnly={!isEditing}
+    />
+  </Box>
+</Box>
+
 
     <Flex justifyContent="center" alignItems="center" gap="20px">
         { !isEditing ? (
@@ -1840,7 +1841,7 @@ onClick={refresh}
             width="120px"
             height="40px"
             borderRadius="8px"
-             marginBottom="50px"
+            marginBottom="50px"
           >
             Cancel
           </Button>
