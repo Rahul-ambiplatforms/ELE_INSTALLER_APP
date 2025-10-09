@@ -1,7 +1,7 @@
 const express = require('express');
 const adiancerouter = express.Router();
 const {isAuthenticatedUser, authorizeRoles, authorizeRolesElection} = require('../middleware/auth');
-const { getCameraStatus,getCameraById, getLocation, updateCamera, signin, verifyOtp, createCamera, getCameraByDid, getCamerasbyAssignedBy, getCamerasbyNumber, assignCamera, addData, getAcdetails, updateAssemblyNames, updateDistrict, convertDistrictToUpperCase, getDistrictdetails, updateStr, getdetails, getsetting, setsetting, getStateData, getDashboardDetails, updateUser, getPsDetails, getPsLocation, getDistrictData, getAssemblyData, getCameraByLocation, attendance, getLatLongFsv, getFlvLatDid, getFullDid, getLatLongPolling, removeEleCamera, trackLiveLatLong, getElectionUser, getLatLongPhaseOne, getCameraByDidInfo, getElectionUserChart, getElectionCameraChart, rebootCamera, getRebootCamera, getAssemblyByNumber, getCamerasbyDid, getElectionUserPage, getBiharReport, getBiharReportUser, getSixDistrictDataBihar } = require('../controllers/electionController');
+const { setIsEdited,getCameraStatus,getCameraById, getLocation, updateCamera, signin, verifyOtp, createCamera, getCameraByDid, getCamerasbyAssignedBy, getCamerasbyNumber, assignCamera, addData, getAcdetails, updateAssemblyNames, updateDistrict, convertDistrictToUpperCase, getDistrictdetails, updateStr, getdetails, getsetting, setsetting, getStateData, getDashboardDetails, updateUser, getPsDetails, getPsLocation, getDistrictData, getAssemblyData, getCameraByLocation, attendance, getLatLongFsv, getFlvLatDid, getFullDid, getLatLongPolling, removeEleCamera, trackLiveLatLong, getElectionUser, getLatLongPhaseOne, getCameraByDidInfo, getElectionUserChart, getElectionCameraChart, rebootCamera, getRebootCamera, getAssemblyByNumber, getCamerasbyDid, getElectionUserPage, getBiharReport, getBiharReportUser, getSixDistrictDataBihar } = require('../controllers/electionController');
 
 adiancerouter.route('/cameras').get( getCameraById );
 adiancerouter.route('/getLocation').get( getLocation );
@@ -24,7 +24,7 @@ adiancerouter.route('/getPsLocation').get( getPsLocation );
 adiancerouter.route('/updateStr').get( updateStr );
 // adiancerouter.route('/getdetails').post( getdetails );
 
-
+adiancerouter.route('/camera/:deviceId/edit').put(setIsEdited);
 // settings
 adiancerouter.route('/getsetting').post( getsetting );
 adiancerouter.route('/setsetting').post( setsetting );
