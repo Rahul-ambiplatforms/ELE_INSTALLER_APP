@@ -56,6 +56,7 @@ import {
   trackLiveLatLong,
   updateCamera,
   getCameraStatus,
+   setIsEdited 
 } from "../actions/userActions"; // Import the new action
 import { MdDelete, MdEdit, MdVisibility } from "react-icons/md";
 import withAuth from "./withAuth";
@@ -91,7 +92,7 @@ const AutoInstaller = () => {
   const [stateu, setStateu] = useState(" ");
   const [punjab, setPunjab] = useState(" ");
   const [tripura, setTripura] = useState(" ");
-
+  const [isEditing, setIsEditing] = useState(false); // NEW: Editing state
   const [prourl, setProurl] = useState("");
 
   // NEW STATE VARIABLES
@@ -312,6 +313,7 @@ const downloadReport = async () => {
     Location: camera.location,
     "Last Seen": camera.lastSeen,
     Status: camera.status,
+    "Is Edited": camera.isEdited,
   }));
 
   const ws = XLSX.utils.json_to_sheet(exportData);
@@ -518,6 +520,7 @@ const downloadReport = async () => {
 
       let installed_status = 1;
       let status = "RUNNING";
+
       console.log(
         "Submitted:",
         deviceId,
@@ -531,7 +534,7 @@ const downloadReport = async () => {
         latitude,
         longitude,
         installed_status,
-        status
+        status,
       );
       const response = await installCamera(
         deviceId,
@@ -547,8 +550,8 @@ const downloadReport = async () => {
         installed_status,
         status,
         formattedDate,
-        formattedTime
-      );
+        formattedTime,      );
+
       console.log("response of submit", response);
       camera();
       setState("");
@@ -557,6 +560,13 @@ const downloadReport = async () => {
       setPsNumber("");
       setExcelLocation("");
       setShowAdditionalInputs(false);
+      setIsEditing(false);
+
+      // Call the new API endpoint to update isEdited
+      if (isEditing) {
+        await setIsEdited(deviceId); // Call the new API function
+      }
+
     } catch (error) {
       console.error(error);
     }
@@ -710,44 +720,58 @@ const downloadReport = async () => {
 
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+   const autosuggestRef = useRef(null);
 
-  const handleInputChange = async (event, { newValue }) => {
+   const handleInputChange = async (event, { newValue, method }) => {
     setDeviceId(newValue);
 
-    const numericValue = newValue.replace(/\D/g, "");
+    if (method === 'type') {
+      const numericValue = newValue.replace(/\D/g, '');
 
-    if (numericValue.length === 6) {
-      setIsLoading(true);
-      try {
-        const response = await getFullDid(numericValue);
-        setSuggestions(response.streamnames);
-      } catch (error) {
-        console.error("Error fetching suggestions:", error);
-      } finally {
-        setIsLoading(false);
+      if (numericValue.length === 6) {
+        setIsLoading(true);
+        try {
+          const response = await getFullDid(numericValue);
+          setSuggestions(response.streamnames);
+        } catch (error) {
+          console.error('Error fetching suggestions:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setSuggestions([]);
       }
-    } else {
-      setSuggestions([]);
     }
   };
 
+  const handleSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
+    setDeviceId(suggestionValue);
+    setSuggestions([]); // Clear suggestions after selection
+    if (autosuggestRef.current) {
+        autosuggestRef.current.input.blur();
+    }
+  };
+
+  const getSuggestionValue = (suggestion) => suggestion;
+  const renderSuggestion = (suggestion) => <div>{suggestion}</div>;
+
   const inputProps = {
+    placeholder: 'Enter Device ID',
     value: deviceId,
     onChange: handleInputChange,
-    placeholder: "Enter Device ID",
     style: {
-      width: "240px",
-      height: "35px",
-      padding: "10px 14px",
-      borderRadius: "8px",
-      background: "#fff",
-      boxShadow: "inset 0 1px 2.4px rgba(0, 0, 0, 0.25)",
-      color: "black",
+      width: '240px',
+      height: '35px',
+      padding: '10px 14px',
+      borderRadius: '8px',
+      background: '#fff',
+      boxShadow: 'inset 0 1px 2.4px rgba(0, 0, 0, 0.25)',
+      color: 'black',
       fontFamily: "'Wix Madefor Text'",
-      fontSize: "12px",
-      fontStyle: "normal",
+      fontSize: '12px',
+      fontStyle: 'normal',
       fontWeight: 400,
-      lineHeight: "normal",
+      lineHeight: 'normal',
     },
   };
 
@@ -1391,16 +1415,20 @@ onClick={refresh}
               >
                 {/* <Text style={{ width: "120px" }}>DeviceID</Text> */}
                 {suggestions && suggestions.length >= 0 ? (
-                  <Autosuggest
-                    suggestions={suggestions}
-                    onSuggestionsFetchRequested={({ value }) =>
-                      handleInputChange(null, { newValue: value })
-                    }
-                    onSuggestionsClearRequested={() => setSuggestions([])}
-                    getSuggestionValue={(suggestion) => suggestion}
-                    renderSuggestion={(suggestion) => <div>{suggestion}</div>}
-                    inputProps={inputProps}
-                  />
+                   <Autosuggest
+      ref={autosuggestRef}
+      suggestions={suggestions}
+      onSuggestionsFetchRequested={({ value, reason }) => {
+        if (reason === 'input-changed') {
+          handleInputChange(null, { newValue: value, method: 'type' });
+        }
+      }}
+      onSuggestionsClearRequested={() => setSuggestions([])}
+      getSuggestionValue={getSuggestionValue}
+      renderSuggestion={renderSuggestion}
+      inputProps={inputProps}
+      onSuggestionSelected={handleSuggestionSelected}
+    />
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <Text>No Camera Found !</Text>
@@ -1640,157 +1668,198 @@ onClick={refresh}
               )}
 
               {/* DIV 2: Camera Location Details - Only show after Camera DID Info is clicked */}
-              {hasClickedCameraDidInfo && (
-                <Box>
-                  <h1
-                    style={{
-                      fontFamily: "Wix Madefor Text",
-                      fontSize: "14px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    &nbsp;&nbsp;Camera Feed Status
-                    <img
-                      src={line}
-                      alt="Line"
-                      style={{
-                        width: "200px",
-                        height: "1px",
-                        marginLeft: "10px",
-                        verticalAlign: "middle",
-                      }}
-                    />
-                  </h1>
+             {hasClickedCameraDidInfo && (
+  <Box>
+    <h1
+      style={{
+        fontFamily: "Wix Madefor Text",
+        fontSize: "14px",
+        fontStyle: "normal",
+        fontWeight: 500,
+        lineHeight: "20px",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      &nbsp;&nbsp;Camera Feed Status
+      <img
+        src={line}
+        alt="Line"
+        style={{
+          width: "200px",
+          height: "1px",
+          marginLeft: "10px",
+          verticalAlign: "middle",
+        }}
+      />
+    </h1>
 
-                  {/* Location Details Form - Only show after Camera DID Info is clicked */}
-                  <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-                    <Text
-                      style={{
-                        width: "320px",
-                        fontWeight: 500,
-                        fontFamily: "Wix Madefor Text",
-                      }}
-                    >
-                      &nbsp; State
-                    </Text>
-                    <Input
-                      background="#FFF"
-                      fontWeight="500"
-                      fontFamily="Wix Madefor Text"
-                      fontSize="12px"
-                      value={state}
-                      onChange={(e) => setState(e.target.value.toUpperCase())}
-                      placeholder="State"
-                    />
-                  </div>
-                  <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-                    <Text
-                      style={{
-                        width: "320px",
-                        fontWeight: 500,
-                        fontFamily: "Wix Madefor Text",
-                      }}
-                    >
-                      &nbsp; District
-                    </Text>
-                    <Input
-                      background="#FFF"
-                      fontWeight="500"
-                      fontFamily="Wix Madefor Text"
-                      fontSize="12px"
-                      value={district}
-                      onChange={(e) => setDistrict(e.target.value)}
-                      placeholder="District"
-                    />
-                  </div>
-                  <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-                    <Text
-                      style={{
-                        width: "320px",
-                        fontWeight: 500,
-                        fontFamily: "Wix Madefor Text",
-                      }}
-                    >
-                      &nbsp; Assembly
-                    </Text>
-                    <Input
-                      background="#FFF"
-                      fontWeight="500"
-                      fontFamily="Wix Madefor Text"
-                      fontSize="12px"
-                      value={assemblyName}
-                      onChange={(e) => setAssemblyName(e.target.value)}
-                      placeholder="Assembly Name"
-                    />
-                  </div>
-                  <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-                    <Text
-                      style={{
-                        width: "320px",
-                        fontWeight: 500,
-                        fontFamily: "Wix Madefor Text",
-                      }}
-                    >
-                      &nbsp; PsNo.
-                    </Text>
-                    <Input
-                      background="#FFF"
-                      fontWeight="500"
-                      fontFamily="Wix Madefor Text"
-                      fontSize="12px"
-                      value={psNumber}
-                      onChange={(e) => setPsNumber(e.target.value)}
-                      placeholder="PS Number"
-                    />
-                  </div>
-                  <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
-                    <Text
-                      style={{
-                        width: "320px",
-                        fontWeight: 500,
-                        fontFamily: "Wix Madefor Text",
-                      }}
-                    >
-                      &nbsp; Location
-                    </Text>
-                    <Input
-                      background="#FFF"
-                      fontWeight="500"
-                      fontFamily="Wix Madefor Text"
-                      fontSize="12px"
-                      value={excelLocation}
-                      onChange={(e) => setExcelLocation(e.target.value)}
-                      placeholder="Location"
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Button
-                      background="#3F77A5"
-                      display="flex"
-                      justifyContent="center"
-                      alignItems="center"
-                      width="342px"
-                      height="40px"
-                      border-radius="8px"
-                      color="white"
-                      onClick={handleSubmit}
-                       marginBottom="50px"
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </Box>
-              )}
+    {/* Location Details Form - Show inputs based on isEditing */}
+    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
+      <Text
+        style={{
+          width: "320px",
+          fontWeight: 500,
+          fontFamily: "Wix Madefor Text",
+        }}
+      >
+        &nbsp; State
+      </Text>
+      {isEditing ? (
+        <Input
+          background="#FFF"
+          fontWeight="500"
+          fontFamily="Wix Madefor Text"
+          fontSize="12px"
+          value={state}
+          onChange={(e) => setState(e.target.value.toUpperCase())}
+          placeholder="State"
+          isReadOnly={true}
+        />
+      ) : (
+        <Text>&nbsp; {state}</Text>
+      )}
+    </div>
+    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
+      <Text
+        style={{
+          width: "320px",
+          fontWeight: 500,
+          fontFamily: "Wix Madefor Text",
+        }}
+      >
+        &nbsp; District
+      </Text>
+      {isEditing ? (
+        <Input
+          background="#FFF"
+          fontWeight="500"
+          fontFamily="Wix Madefor Text"
+          fontSize="12px"
+          value={district}
+          onChange={(e) => setDistrict(e.target.value)}
+          placeholder="District"
+        />
+      ) : (
+        <Text>&nbsp; {district}</Text>
+      )}
+    </div>
+    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
+      <Text
+        style={{
+          width: "320px",
+          fontWeight: 500,
+          fontFamily: "Wix Madefor Text",
+        }}
+      >
+        &nbsp; Assembly
+      </Text>
+      {isEditing ? (
+        <Input
+          background="#FFF"
+          fontWeight="500"
+          fontFamily="Wix Madefor Text"
+          fontSize="12px"
+          value={assemblyName}
+          onChange={(e) => setAssemblyName(e.target.value)}
+          placeholder="Assembly Name"
+        />
+      ) : (
+        <Text>&nbsp; {assemblyName}</Text>
+      )}
+    </div>
+    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
+      <Text
+        style={{
+          width: "320px",
+          fontWeight: 500,
+          fontFamily: "Wix Madefor Text",
+        }}
+      >
+        &nbsp; PsNo.
+      </Text>
+      {isEditing ? (
+        <Input
+          background="#FFF"
+          fontWeight="500"
+          fontFamily="Wix Madefor Text"
+          fontSize="12px"
+          value={psNumber}
+          onChange={(e) => setPsNumber(e.target.value)}
+          placeholder="PS Number"
+        />
+      ) : (
+        <Text>&nbsp; {psNumber}</Text>
+      )}
+    </div>
+    <div style={{ marginBottom: "0.75rem", padding: "10px" }}>
+      <Text
+        style={{
+          width: "320px",
+          fontWeight: 500,
+          fontFamily: "Wix Madefor Text",
+        }}
+      >
+        &nbsp; Location
+      </Text>
+      {isEditing ? (
+        <Input
+          background="#FFF"
+          fontWeight="500"
+          fontFamily="Wix Madefor Text"
+          fontSize="12px"
+          value={excelLocation}
+          onChange={(e) => setExcelLocation(e.target.value)}
+          placeholder="Location"
+        />
+      ) : (
+        <Text>&nbsp; {excelLocation}</Text>
+      )}
+    </div>
+
+    <Flex justifyContent="center" alignItems="center">
+        { !isEditing ? (
+          <Button
+            background="#3F77A5"
+            color="white"
+            onClick={() => setIsEditing(true)} // Set isEditing to true on "Edit"
+            width="120px"
+            height="40px"
+            borderRadius="8px"
+            marginRight="10px"
+             marginBottom="50px"
+          >
+            Edit
+          </Button>
+        ) : (
+          <Button
+            colorScheme="gray"
+            onClick={() => {
+              setIsEditing(false);
+            }}
+            width="120px"
+            height="40px"
+            borderRadius="8px"
+             marginBottom="50px"
+          >
+            Cancel
+          </Button>
+        )}
+
+      <Button
+        background="#3F77A5"
+        color="white"
+        onClick={handleSubmit} // Submit - isEdited is determined by the state
+        width="120px"
+        height="40px"
+        borderRadius="8px"
+         marginBottom="50px"
+      >
+        Submit
+      </Button>
+    </Flex>
+  </Box>
+)}
             </>
           )}
         </>
