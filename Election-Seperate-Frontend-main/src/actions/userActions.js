@@ -9,7 +9,15 @@ const instance = axios.create({
   baseURL: baseURL
 });
 
-
+export const setIsEdited = async (deviceId) => {
+  try {
+    const response = await instance.put(`/camera/${deviceId}/edit`); // New api to update edited status
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: error.message || 'An error occurred while setting isEdited' };
+  }
+};
 export const getCameraStatus = async (deviceId) => {
   try {
     // Use the axios instance and pass the camera_id as a query param
