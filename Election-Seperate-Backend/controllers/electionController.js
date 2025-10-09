@@ -20,6 +20,27 @@ const EleReboot = require('../models/election-reboot');
 const punjabElection = require('../models/election-users-punjab');
 const AiStatus = require('../models/AiStatus');
 
+exports.setIsEdited = async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+
+    const updatedCamera = await EleCamera.findOneAndUpdate(
+      { deviceId: deviceId },
+      { $set: { isEdited: 1 } }, // Set isEdited to 1
+      { new: true }
+    );
+
+    if (!updatedCamera) {
+      return res.status(404).json({ success: false, message: "Camera not found" });
+    }
+
+    res.status(200).json({ success: true, data: updatedCamera });
+
+  } catch (error) {
+    console.error("Error updating isEdited:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 exports.getCameraStatus = async (req, res) => {
   try {
     const { camera_id } = req.query; // e.g., /status?camera_id=VSPL-123297-JABFD
