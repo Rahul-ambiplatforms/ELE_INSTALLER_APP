@@ -1817,7 +1817,7 @@ onClick={refresh}
       )}
     </div>
 
-    <Flex justifyContent="center" alignItems="center">
+    <Flex justifyContent="center" alignItems="center" gap="20px">
         { !isEditing ? (
           <Button
             background="#3F77A5"
