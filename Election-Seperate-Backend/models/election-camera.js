@@ -66,7 +66,11 @@ const cameraSchema = new mongoose.Schema({
    },
    time: {
       type: String
-   }
+   },
+    isEdited: { 
+        type: Number,
+        default: 0 
+    }
 });
 
 const EleCamera = mongoose.model('election-camera', cameraSchema);
