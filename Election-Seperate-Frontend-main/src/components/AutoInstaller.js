@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import logo from "./images/logo/cam.png";
 import Delete from "./images/logo/deleteicon.png";
+import Trash from "./images/logo/Trash.png";
 import { FiList } from "react-icons/fi";
 import * as FileSaver from "file-saver";
 import { FaFileExcel } from "react-icons/fa";
@@ -39,6 +40,7 @@ import {
   Box,
   Image,
   Grid,
+  Center,
   Collapse,
 } from "@chakra-ui/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -106,6 +108,8 @@ const AutoInstaller = () => {
   const [searchDeviceId, setSearchDeviceId] = useState("");
   const [isFetchingCameraDetails, setIsFetchingCameraDetails] = useState(false); // New state for fetching status
 
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [cameraToDelete, setCameraToDelete] = useState(null);
   // useRef to hold the interval ID
   const toastInterval = useRef(null);
 
@@ -119,6 +123,17 @@ const AutoInstaller = () => {
   const [sortOrder, setSortOrder] = useState("asc"); // 'asc' or 'desc'
   const totalCameras = cameraa.length;
   const totalPages = Math.ceil(totalCameras / camerasPerPage); // Calculate the number of pages
+
+    const openDeleteModal = (cameraId) => {
+    setCameraToDelete(cameraId);
+    setIsDeleteModalOpen(true);
+  };
+
+    // Function to close the confirmation modal
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setCameraToDelete(null); // Clear the camera ID
+  };
 
   useEffect(() => {
     camera();
@@ -493,13 +508,19 @@ const downloadReport = async () => {
     window.location.reload();
   };
 
-  const handleDeleteClick = async (id) => {
+   const handleDeleteClickConfirmed = async () => {
     try {
-      console.log("getId", id);
-      const response = await removeEleCamera(id);
-      camera();
+      // Only proceed if a camera ID is actually stored
+      if (cameraToDelete) {
+        console.log("Deleting camera with ID:", cameraToDelete);
+        const response = await removeEleCamera(cameraToDelete);
+        camera(); // Refresh camera list
+      }
     } catch (error) {
-      console.error("Error updating consignment:", error);
+      console.error("Error deleting camera:", error);
+      // Handle error (e.g., display an error message to the user)
+    } finally {
+      closeDeleteModal(); // Close the modal after deletion (or error)
     }
   };
 
@@ -912,67 +933,74 @@ const downloadReport = async () => {
               </Flex>
 
               <h3
-                style={{
-                  display: "flex",
-                  justifyContent: "right",
-                  alignItems: "right",
-                  gap: "0.5rem",
-                  textAlign: "right",
-                  // marginBottom: "10px",
-                }}
-              >
-                <Box style={{ textAlign: "left", width: "55%" }}>
-                  {" "}
-                  {/* Added Box with styling */}
-                  <Text
-                    style={{
-                      fontWeight: "700",
-                      fontFamily: "Inter !important",
-                      fontSize: "20px",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    Devices Added - ({cameraa.length})
-                  </Text>
-                </Box>
-                {!showAdditionalInputs && cameraa.length > 0 && (
-                  <Button
-                    bg="#F4F4F5"
-                    fontSize="15px"
-                    height="10px"
-                    marginTop="5px"
-                    fontFamily="Wix Madefor Text"
-                    onClick={downloadReport}
-                    leftIcon={<FaFileExcel />}
-                  >
-                    Excel
-                    {/* Download Camera Report (Excel) */}{" "}
-                    {/* Commented out the text label */}
-                  </Button>
-                )}
-                <Text
-                  fontWeight="400"
-                  fontFamily="Wix Madefor Text"
-                  fontSize="13px"
-                  textDecoration="underline"
-                  textUnderlineOffset="2px"
-                  textDecorationStyle="solid"
-                  textDecorationSkipInk="none"
-                  textDecorationThickness="auto"
-                >
-                  Sort by
-                </Text>
-                <img
-                  src={sortIcon}
-                  alt="Sort"
-                  style={{
-                    width: "15px",
-                    height: "15px",
-                    cursor: "pointer",
-                  }}
-                  onClick={handleSort}
-                />
-              </h3>
+  style={{
+    display: "flex",
+    justifyContent: "space-between", // Left and right main sections
+    alignItems: "center",
+    width: "100%",
+    // marginBottom: "10px",
+  }}
+>
+  {/* Left side - Devices Added */}
+  <Box style={{ textAlign: "left" }}>
+    <Text
+      style={{
+        fontWeight: "700",
+        fontFamily: "Inter !important",
+        fontSize: "20px",
+        lineHeight: "normal",
+      }}
+    >
+      Devices Added - ({cameraa.length})
+    </Text>
+  </Box>
+
+  {/* Right side - Button + Sort */}
+  <Box
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem", // small gap between elements here
+    }}
+  >
+    {!showAdditionalInputs && cameraa.length > 0 && (
+      <Button
+        bg="#F4F4F5"
+        fontSize="15px"
+        height="35px"
+        fontFamily="Wix Madefor Text"
+        onClick={downloadReport}
+        leftIcon={<FaFileExcel />}
+      >
+        Excel
+      </Button>
+    )}
+
+    {/* Sort by + icon grouped together */}
+    <Box style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+      <Text
+        fontWeight="400"
+        fontFamily="Wix Madefor Text"
+        fontSize="13px"
+        textDecoration="underline"
+        textUnderlineOffset="2px"
+      >
+        Sort by
+      </Text>
+      <img
+        src={sortIcon}
+        alt="Sort"
+        style={{
+          width: "15px",
+          height: "15px",
+          cursor: "pointer",
+        }}
+        onClick={handleSort}
+      />
+    </Box>
+  </Box>
+</h3>
+
               <div
                 style={{
                   display: "flex",
@@ -1275,25 +1303,74 @@ onClick={refresh}
                             </Button>
                           ) : (
                             <Button
-                            
-                              onClick={() => handleDeleteClick(camera.deviceId)}
-                              colorScheme="red"
-                              size="sm"
-                            >
-                               <img
-    src={Delete}
-    alt="Camera Icon"
-    width="20px"
-    height="20px"
-    style={{ objectFit: "contain" }}
-  />
-                            </Button>
+              onClick={() => openDeleteModal(camera.deviceId)} // Open modal with camera ID
+              colorScheme="red"
+              size="sm"
+            >
+              <img
+                src={Delete}
+                alt="Camera Icon"
+                width="20px"
+                height="20px"
+                style={{ objectFit: "contain" }}
+              />
+            </Button>
                           )}
                         </Box>
                       </Grid>
                     )}
                   </Box>
                 ))}
+
+                 <Modal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} isCentered>
+        <ModalOverlay />
+        <ModalContent
+          borderRadius="10px"
+          boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
+          border="2px solid #ADD8E6"
+          maxWidth="400px"
+        >
+          <ModalHeader
+            textAlign="center"
+            fontSize="22px"
+            fontWeight="bold"
+            pb={2}
+          >
+            Are you sure you want to Delete?
+          </ModalHeader>
+          <ModalBody textAlign="center" pt={2}>
+            <Center>
+              <Image src={Trash} alt="Trash Icon" boxSize="50px" mb={4} />
+            </Center>
+            <Text fontSize="14px" color="gray.600" mb={4}>
+              Deleting list will remove the information from our database.
+            </Text>
+          </ModalBody>
+          <ModalFooter justifyContent="space-around" p={6}>
+            <Button
+              onClick={handleDeleteClickConfirmed}
+              bg="#558BBA"
+              color="white"
+              borderRadius="8px"
+              px={6}
+              _hover={{ bg: "#427299" }}
+            >
+              Delete
+            </Button>
+            <Button
+              onClick={closeDeleteModal}
+              bg="white"
+              color="red"
+              borderRadius="8px"
+              px={6}
+              border="1px solid red"
+              _hover={{ bg: "gray.100" }}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
               <h2
                 style={{
@@ -1544,30 +1621,10 @@ onClick={refresh}
                           marginRight="0.5rem"
                           fontFamily="Wix Madefor Text"
                         >
-                          Resolution:
-                        </Text>
-                        <Text marginRight="1rem" fontFamily="Wix Madefor Text">
-                          {cameraStatus.resolution}
-                        </Text>
-
-                        <Text
-                          marginRight="0.5rem"
-                          fontFamily="Wix Madefor Text"
-                        >
                           Camera Angle:
                         </Text>
                         <Text marginRight="1rem" fontFamily="Wix Madefor Text">
                           {Math.abs(cameraStatus.camera_angle)}
-                        </Text>
-
-                        <Text
-                          marginRight="0.5rem"
-                          fontFamily="Wix Madefor Text"
-                        >
-                          FPS:
-                        </Text>
-                        <Text marginRight="1rem" fontFamily="Wix Madefor Text">
-                          {cameraStatus.fps}{" "}
                         </Text>
                       </Flex>
 
