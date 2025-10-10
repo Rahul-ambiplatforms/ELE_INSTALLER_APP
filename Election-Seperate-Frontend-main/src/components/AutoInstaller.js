@@ -1614,7 +1614,7 @@ onClick={refresh}
                         borderRadius="md"
                         bg="gray.50"
                         width="342px"
-                        height="54px"
+                        height="45px"
                         flex-shrink="0"
                       >
                         <Text
