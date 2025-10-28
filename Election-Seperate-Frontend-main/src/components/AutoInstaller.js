@@ -222,7 +222,7 @@ const AutoInstaller = () => {
     return 0;
   });
 
-  const handleAddInputs = async () => {
+const handleAddInputs = async () => {
     if (!deviceId) {
       toast.error("Please enter a Device ID first", {
         position: "top-right",
@@ -293,7 +293,7 @@ const AutoInstaller = () => {
       return;
     }
 
-    if (response.data.state === "PUNJAB") {
+     if (response.data.state === "PUNJAB") {
       toast.error("State is PUNJAB. Refreshing the page...", {
         position: "top-right",
         autoClose: 3500,
@@ -318,6 +318,72 @@ const AutoInstaller = () => {
     sendUrlToExternalApi(response.flvUrl.url2);
 
     startCameraStatusPolling(deviceId);
+
+   // **Call the Submission Logic Directly:**
+    try {
+      let latitude = location.latitude;
+      let longitude = location.longitude;
+
+      const currentTime = new Date();
+      const formattedDate = currentTime.toLocaleDateString("en-GB");
+      const formattedTime = currentTime.toLocaleTimeString("en-US", {
+        hour12: false,
+      });
+
+      let installed_status = 1;
+      let status = "RUNNING";
+
+     console.log(
+      "Values being passed to installCamera:",
+      {
+        deviceId: deviceId,
+        namee: namee,
+        mobilee: mobilee,
+        assemblyName: assemblyName,
+        psNumber: psNumber,
+        state: state,
+        district: district,
+        excelLocation: excelLocation,
+        latitude: latitude,
+        longitude: longitude,
+      }
+    );
+      const installResponse = await installCamera(
+        deviceId,
+        namee,
+        mobilee,
+        assemblyName,
+        psNumber,
+        state,
+        district,
+        excelLocation,
+        latitude,
+        longitude,
+        installed_status,
+        status,
+        formattedDate,
+        formattedTime,      );
+
+      console.log("response of installCamera", installResponse);
+      camera(); // Update the camera list
+
+      // **Crucially, DO NOT clear the form or hide it.**
+      // setState("");
+      // setDistrict("");
+      // setAssemblyName("");
+      // setPsNumber("");
+      // setExcelLocation("");
+      // setShowAdditionalInputs(false);  //<---REMOVE THIS
+      setIsEditing(false);
+
+      // Call the new API endpoint to update isEdited
+      if (isEditing) {
+        await setIsEdited(deviceId); // Call the new API function
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
   };
 const downloadReport = async () => {
   const exportData = cameraa.map((camera) => ({
@@ -667,10 +733,11 @@ const downloadReport = async () => {
     }
   };
 
-  const camera = async () => {
+ const camera = async () => {
     try {
       const mobile = localStorage.getItem("mobile");
       const result = await getCamera(mobile);
+      console.log("Data from API:", result.data); // Add this line
       console.log("cameras data", result.data);
 
       // Initial sort when data is fetched
