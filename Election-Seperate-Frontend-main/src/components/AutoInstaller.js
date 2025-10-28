@@ -223,85 +223,43 @@ const AutoInstaller = () => {
   });
 
 const handleAddInputs = async () => {
-    if (!deviceId) {
-      toast.error("Please enter a Device ID first", {
-        position: "top-right",
-        autoClose: 3500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-      return;
-    }
+  if (!deviceId) {
+    toast.error("Please enter a Device ID first");
+    return;
+  }
 
-    setShowAdditionalInputs(true);
-    setHasClickedCameraDidInfo(true); // Button was clicked
-    clearInterval(cameraStatusInterval.current);
-    clearInterval(toastInterval.current);
+  setShowAdditionalInputs(true);
+  setHasClickedCameraDidInfo(true);
+  clearInterval(cameraStatusInterval.current);
+  clearInterval(toastInterval.current);
 
-    // Start fetching camera details
-    setIsFetchingCameraDetails(true);
+  setIsFetchingCameraDetails(true);
 
+  try {
     const response = await getCameraByDid(deviceId);
+
     if (!response?.flvUrl?.url2) {
       toast.error(
-        `Please Enter Full DeviceID 'OR' URL2 is not available, so contact Support`,
-        {
-          position: "top-right",
-          autoClose: 3500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        }
+        `Please Enter Full DeviceID 'OR' URL2 is not available, so contact Support`
       );
       setIsFetchingCameraDetails(false);
       return;
     }
 
     setFlvUrl(response.flvUrl.url2);
+
     if (!response.success) {
-      toast.error("Failed to get camera data", {
-        position: "top-right",
-        autoClose: 3500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error("Failed to get camera data");
       toast.error(
-        "Plz connect support team before installing camera, from below right corner...",
-        {
-          position: "top-right",
-          autoClose: 5500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        }
+        "Plz connect support team before installing camera, from below right corner..."
       );
-      toast.warning("If testing camera than wait for the view", {
-        position: "top-right",
-        autoClose: 5500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.warning("If testing camera than wait for the view");
       setIsFetchingCameraDetails(false);
       return;
     }
 
-     if (response.data.state === "PUNJAB") {
-      toast.error("State is PUNJAB. Refreshing the page...", {
-        position: "top-right",
-        autoClose: 3500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+    if (response.data.state === "PUNJAB") {
+      toast.error("State is PUNJAB. Refreshing the page...");
       setTimeout(() => {
         window.location.reload();
       }, 100);
@@ -309,17 +267,25 @@ const handleAddInputs = async () => {
       return;
     }
 
-    setState(response.data.state);
-    setAssemblyName(response.data.assemblyName);
-    setPsNumber(response.data.psNo);
-    setDistrict(response.data.district);
-    setExcelLocation(response.data.location);
+    const fetchedState = response.data.state;
+    const fetchedAssemblyName = response.data.assemblyName;
+    const fetchedPsNumber = response.data.psNo;
+    const fetchedDistrict = response.data.district;
+    const fetchedExcelLocation = response.data.location;
+
+    setState(fetchedState);
+    setAssemblyName(fetchedAssemblyName);
+    setPsNumber(fetchedPsNumber);
+    setDistrict(fetchedDistrict);
+    setExcelLocation(fetchedExcelLocation);
 
     sendUrlToExternalApi(response.flvUrl.url2);
-
     startCameraStatusPolling(deviceId);
 
-   // **Call the Submission Logic Directly:**
+    // **Wait for State to Update (Important!)**
+    await new Promise((resolve) => setTimeout(resolve, 100)); // Adjust time as needed
+
+    // **Call the Submission Logic Directly:**
     try {
       let latitude = location.latitude;
       let longitude = location.longitude;
@@ -333,36 +299,22 @@ const handleAddInputs = async () => {
       let installed_status = 1;
       let status = "RUNNING";
 
-     console.log(
-      "Values being passed to installCamera:",
-      {
-        deviceId: deviceId,
-        namee: namee,
-        mobilee: mobilee,
-        assemblyName: assemblyName,
-        psNumber: psNumber,
-        state: state,
-        district: district,
-        excelLocation: excelLocation,
-        latitude: latitude,
-        longitude: longitude,
-      }
-    );
       const installResponse = await installCamera(
         deviceId,
         namee,
         mobilee,
-        assemblyName,
-        psNumber,
-        state,
-        district,
-        excelLocation,
+        fetchedAssemblyName,
+        fetchedPsNumber,
+        fetchedState,
+        fetchedDistrict,
+        fetchedExcelLocation,
         latitude,
         longitude,
         installed_status,
         status,
         formattedDate,
-        formattedTime,      );
+        formattedTime,
+      );
 
       console.log("response of installCamera", installResponse);
       camera(); // Update the camera list
@@ -384,7 +336,14 @@ const handleAddInputs = async () => {
     } catch (error) {
       console.error(error);
     }
-  };
+
+  } catch (error) {
+    console.error("Error in handleAddInputs:", error);
+    // Handle errors appropriately (e.g., display an error message)
+  } finally {
+    setIsFetchingCameraDetails(false);
+  }
+};
 const downloadReport = async () => {
   const exportData = cameraa.map((camera) => ({
     "Device ID": camera.deviceId,
