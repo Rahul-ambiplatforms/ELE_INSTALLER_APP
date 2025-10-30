@@ -1744,7 +1744,7 @@ onClick={refresh}
                       bg="red.100"
                       color="gray.600"
                     >
-                      <Text>Fetching Camera Configuration Details...</Text>
+                     <Text color="red" fontWeight="bold">AI की स्थिति प्राप्त की जा रही है, कृपया आगे बढ़ने से पहले प्रतीक्षा करें . . . .</Text>
                     </Flex>
                   )}
                 </Box>
