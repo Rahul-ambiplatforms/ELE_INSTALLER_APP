@@ -1107,10 +1107,6 @@ onClick={refresh}
                           Device ID: {camera.deviceId}
                         </Text>
                       </Box>
-
-                      <Box>
-                        <Text>{camera.status === "RUNNING" ? "🟢" : "🔴"}</Text>
-                      </Box>
                       <Box
                         width="0"
                         height="18px"
