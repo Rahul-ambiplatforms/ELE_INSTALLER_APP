@@ -1,11 +1,12 @@
 // database.js
 const mongoose = require("mongoose");
+const MONGO_URI =
+  "mongodb+srv://doadmin:4821yRT9w60OjZo3@vmuktisolution-esp-backup-c0026980.mongo.ondigitalocean.com/ELE?tls=true&authSource=admin&replicaSet=vmuktisolution-esp-backup";
 
 const connectDatabase = async () => {
   try {
-    const conn = await mongoose.connect(process.env.DB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    const conn = await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
     });
 
     console.log(`✅ MongoDB connected: ${conn.connection.host}`);
